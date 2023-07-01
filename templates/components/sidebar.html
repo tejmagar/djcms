@@ -1,0 +1,75 @@
+{% load utils %}
+
+<aside class="bg-[#1d2327] text-white h-full overflow-y-auto">
+    <ul class="text-[13px] text-[#dddddd]">
+        <li class="my-1">
+            {% should_expand_menu 'dashboard' as expand_dashboard %}
+            <a href="{% url 'dashboard' %}"
+               class="px-4 py-2 border-l-4 border-transparent block text-[14px] {% if expand_dashboard %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+                <i class="fa-solid fa-gauge-high fa-lg w-[28px]"></i>Dashboard
+            </a>
+        </li>
+
+        <li>
+            {% should_expand_menu 'posts' as expand_post %}
+
+            <a href="{% url 'edit_post_select' %}"
+               class="px-4 py-2 border-l-4 border-transparent block text-[14px] {% if expand_post %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+                <i class="fa-solid fa-thumbtack fa-lg w-[28px]"></i>Posts
+            </a>
+
+            {% if expand_post %}
+                <ul class="bg-[#2c3338] py-2">
+                    <li class="px-4 py-1 border-l-4 border-transparent hover:border-blue-500">
+                        <a href="{% url 'edit_post_select' %}" class="block">All Posts</a>
+                    </li>
+                    <li class="px-4 py-1 border-l-4 border-transparent  hover:border-blue-500">
+                        <a href="{% url 'new_post' %}" class="block">Add New</a>
+                    </li>
+                    <li class="px-4 py-1 border-l-4 border-transparent  hover:border-blue-500">
+                        <a href="{% url 'categories' %}" class="block">Categories</a>
+                    </li>
+                    <li class="px-4 py-1 border-l-4 border-transparent  hover:border-blue-500">
+                        <a href="{% url 'tags' %}" class="block">Tags</a>
+                    </li>
+                </ul>
+            {% endif %}
+        </li>
+
+        <li class="my-1">
+            {% should_expand_menu 'media' as expand_media %}
+
+            <a href="{% url 'media' %}"
+               class="px-4 py-2 border-l-4 border-transparent hover:border-blue-500 block text-[14px] {% if expand_media %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+                <i class="fa-solid fa-image fa-lg w-[28px]"></i>Media
+            </a>
+
+            {% if expand_media %}
+                <ul class="bg-[#2c3338] py-2">
+                    <li class="px-4 py-1 border-l-4 border-transparent hover:border-blue-500">
+                        <a href="{% url 'media' %}" class="block">Library</a>
+                    </li>
+                </ul>
+            {% endif %}
+        </li>
+
+        <li>
+                <span class="px-4 py-2 my-1 border-l-4 border-transparent hover:border-blue-500 block text-[14px]">
+                    <i class="fa-solid fa-file fa-lg w-[28px]"></i>Pages
+                </span>
+        </li>
+
+        <li>
+                <span class="px-4 py-2 my-1 border-l-4 border-transparent hover:border-blue-500 block text-[14px]">
+                    <i class="fa-solid fa-user fa-lg w-[28px]"></i>Users
+                </span>
+        </li>
+
+        <li>
+                <span class="px-4 py-2 my-1 border-l-4 border-transparent hover:border-blue-500 block text-[14px]">
+                    <i class="fa-solid fa-gear fa-lg w-[28px]"></i>Settings
+                </span>
+        </li>
+
+    </ul>
+</aside>

@@ -1,0 +1,206 @@
+{% load static %}
+{% verbatim %}
+
+<div id="app">
+    <form action="" class="hidden">
+        <input type="file" multiple ref="fileInput" v-on:change="upload">
+    </form>
+
+    <div class="fixed h-screen w-full left-0 top-0 z-[2147483647]" v-cloak v-if="showPicker">
+        <div class="bg-[#000000bb] h-full overflow-y-auto">
+            <div class="min-h-screen justify-center flex items-center">
+                <div class="w-[900px] grid grid-rows-[auto_360px_auto] max-w-full rounded p-4 bg-white">
+                    <!-- Heading and Menus -->
+                    <div>
+                        <div class="flex w-full justify-between items-center">
+                            <h2 class="font-semibold text-xl">Select or Upload Media</h2>
+                            <button v-on:click="close" class="ml-auto fa-lg">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-[#dedede] mt-3">
+                            <div>
+                                <button v-on:click="setCurrentTab(0)"
+                                        class="text-sm border active:text-blue-500 px-2 py-2"
+                                        :class="[currentTab == 0 ? 'border-[#cecece] border-b-transparent':'border-transparent']">
+                                    Upload files
+                                </button>
+                                <button v-on:click="setCurrentTab(1)"
+                                        class="text-sm border active:text-blue-500 px-2 py-2"
+                                        :class="[currentTab == 1 ? 'border-[#cecece] border-b-transparent':'border-transparent']">
+                                    Media Library
+                                </button>
+                            </div>
+
+                            <div v-if="selectedId != -1">
+                                <button v-on:click="this.selectedId=-1" class="mr-4 text-[14px] text-blue-500">Un Select
+                                </button>
+
+                                <button v-on:click="deleteFile" class="text-[14px] text-red-500 hover:underline decoration-red-500">Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Heading and menus-->
+
+                    <!-- Main content -->
+                    <div class="h-full flex justify-center items-center" v-if="currentTab == 0">
+                        <div>
+                            <span class="text-xl block text-center">Drop files to upload</span>
+                            <span class="block text-center my-2 text-gray-800 text-[14px]">or</span>
+                            <button v-on:click="this.fileInput.click()"
+                                    class="border border-blue-600 bg-blue-50 block rounded mx-auto px-8 py-2.5 text-sm text-blue-500">
+                                Select Files
+                            </button>
+                            <span class="text-[13px] text-gray-700 block mt-6">Maximum upload file size: 512 MB.</span>
+                        </div>
+                    </div>
+
+                    <div v-else class="overflow-y-auto my-4">
+                        <div class="h-full" v-if="loading">
+                            Loading...
+                        </div>
+                        <div class="flex flex-wrap gap-8" v-else>
+                            <div v-for="item, index in uploads" v-on:click="this.selectedId = index"
+                                 class="w-[140px] h-[140px]"
+                                 :class="[selectedId == index ? 'border-2 border-red-500':'border border-[#dedede]' ]">
+                                <img :src="item['file']" alt="" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- End main content -->
+
+                    <!-- Select footer -->
+                    <div class="border-t border-[#dedede] pt-4">
+                        <button class="block ml-auto text-[13px] px-4 py-2 rounded"
+                                :class="[( callback == null || selectedId == -1)? 'bg-gray-200 text-gray-400 ':'bg-blue-500 text-white']"
+                                v-on:click="selected">Select
+                        </button>
+                    </div>
+                    <!-- End select footer -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endverbatim %}
+
+<script src="{% static 'scripts/vue.global.js' %}"></script>
+
+<script>
+    const {createApp, ref} = Vue
+
+    const app = createApp({
+        setup() {
+            const type = ref(null);
+            const showPicker = ref(false);
+            const currentTab = ref(0);
+            const uploads = ref([]);
+            const callback = ref(null);
+            const selectedId = ref(-1);
+            const fileInput = ref(null);
+            const loading = ref(true);
+
+            return {
+                showPicker, currentTab, selectedId, fileInput, loading
+            }
+        },
+
+        methods: {
+            setCurrentTab(position) {
+                this.currentTab = position;
+            },
+
+            pickFile(callback = null) {
+                this.selectedId = -1;
+                this.callback = callback;
+                this.showPicker = true;
+                this.loading = true;
+                this.loadFiles()
+            },
+
+            loadFiles() {
+                this.loading = true;
+                let queryUrl = '{% url 'uploaded_files' %}'
+                if (this.type) {
+                    queryUrl += '?filter_byadsense alternatives=' + this.type;
+                }
+
+                fetch(queryUrl, {
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    credentials: 'include'
+                }).then(response => response.json()).then(result => {
+                    this.uploads = [];
+                    this.uploads = result;
+                    this.loading = false;
+                }).catch(error => {
+                    alert('Error fetching data');
+                    this.loading = false;
+                })
+            },
+
+            upload() {
+                const files = this.fileInput.files;
+                const formData = new FormData();
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('files', files[i]);
+                }
+
+                fetch('{% url 'upload_file' %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    credentials: 'include',
+                    body: formData
+                }).then(response => response.json()).then(result => {
+                    this.loadFiles()
+                    this.currentTab = 1;
+                }).catch(error => {
+                    alert('File upload failed')
+                });
+            },
+
+            selected() {
+                if (this.callback && this.selectedId !== -1) {
+                    const uploadItem = this.uploads[this.selectedId]
+                    const url = uploadItem['file'];
+                    this.callback(url)
+                    this.showPicker = false;
+                }
+            },
+
+            close() {
+                this.selectedId = -1;
+                this.showPicker = false
+            },
+
+            deleteFile() {
+                const confirm = window.confirm('Delete image?');
+                if (!confirm) {
+                    return;
+                }
+
+                fetch(`{% url 'delete_file' %}?id=${this.uploads[this.selectedId].id}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    credentials: 'include'
+                }).then(response => {
+                    if (response.ok) {
+                        this.selectedId = -1;
+                        this.loadFiles();
+                    }
+                }).catch(error => {
+                    alert('Error deleting file');
+                })
+            }
+        },
+    }).mount('#app')
+
+    {#app.pickFile()#}
+</script>

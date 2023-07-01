@@ -1,0 +1,60 @@
+{% extends 'layouts/default.html' %}
+
+{% block title %}
+    <title>Categories - DJ CMS</title>
+{% endblock %}
+
+{% block content %}
+    <div class="p-2 md:p-8">
+        <h1 class="inline-block text-xl">Categories</h1>
+
+        <div class="grid gap-8 lg:grid-cols-[400px_1fr] mt-8">
+
+            <form method="POST">
+                <h2 class="text-sm font-medium">Add New Category</h2>
+
+                {% csrf_token %}
+                <div class="mt-4">
+                    {% include 'components/category-form.html' %}
+
+                    <div class="mt-4">
+                        <button class="bg-[#135e96] text-white px-4 py-1.5 text-[13px] rounded">Add New Category
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="md:p-8">
+                <table class="w-full bg-white rounded-lg">
+                    <thead class="border-b border-[#dfdfdf]">
+                    <tr class="text-sm border-b border-[#dedede]">
+                        <th class="font-normal text-blue-600 py-2 w-1/4 text-start px-4">Name</th>
+                        <th class="font-normal text-blue-600 w-1/4 text-start px-4 hidden sm:table-cell">Description
+                        </th>
+                        <th class="font-normal text-blue-600 w-1/4 text-start px-4 hidden md:table-cell">Slug</th>
+                        <th class="font-normal text-blue-600 py-2 w-1/6 text-end px-4 hidden lg:table-cell">Count</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for category in categories %}
+                        <tr class="text-sm {% cycle 'odd:bg-[#f6f7f7]' 'even:bg-white' %}">
+                            <th class="font-normal text-blue-600 py-2 w-1/4 text-start px-4">{{ category.name }}</th>
+                            <th class="font-normal w-1/4 text-start text-gray-600 px-4 hidden sm:table-cell">
+                                {% if category.description == '' %}
+                                   —
+                                {% else %}
+                                    {{ category.description }}
+                                {% endif %}
+                            </th>
+                            <th class="font-normal w-1/4 text-start text-[13px] text-gray-600 px-4 hidden md:table-cell">{{ category.slug }}</th>
+                            <th class="font-normal text-blue-600 py-2 w-1/6 text-end px-4 hidden lg:table-cell">
+                                0
+                            </th>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

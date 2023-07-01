@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block title %}
+        <title>DJ CMS</title>
+    {% endblock %}
+
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+</head>
+<body>
+<div class="grid grid-rows-[auto_1fr] h-screen">
+    <header class="bg-[#1d2327] text-white px-[20px] py-2 flex justify-between">
+        <div>
+            <a href="{% url 'dashboard' %}" class="mr-auto text-[13px]">
+                <i class="fa-solid fa-fire mr-2 text-red-500 w-[16px] fa-lg"></i>
+                DJ CMS
+            </a>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-[200px_1fr] h-full">
+        {% include 'components/sidebar.html' %}
+
+        <main class="overflow-y-auto">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</div>
+
+</body>
+</html>

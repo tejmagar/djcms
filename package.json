@@ -1,0 +1,17 @@
+{
+  "name": "djcms",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "npx tailwindcss -i ./public/scss/main.scss -o ./public/css/main.css --watch",
+    "build": "npx tailwindcss -i ./public/scss/main.scss -o ./public/css/main.css",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "tailwindcss": "^3.3.2"
+  }
+}

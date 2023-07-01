@@ -1,0 +1,155 @@
+{% extends 'layouts/editor.html' %}
+
+{% block title %}
+    <title>Edit Post - DJ CMS</title>
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content %}
+    {% include 'components/media-picker.html' %}
+    <script>
+        const uploadImage = (blobInfo) => new Promise((resolve, reject) => {
+            const formData = new FormData();
+            formData.append('files', blobInfo.blob(), blobInfo.filename());
+
+            fetch('{% url 'upload_file' %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                credentials: 'include',
+                body: formData
+            }).then(response => response.json()).then(result => {
+                resolve(result.location)
+            }).catch(error => {
+                reject(error)
+            });
+        });
+
+        tinymce.init({
+            selector: '#editorArea',
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | blocks | ' +
+                'bold italic backcolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | image | help',
+            skin_url: '/static/tinymce/skins/ui/DJCMS',
+            menubar: false,
+            branding: false,
+            toolbar_mode: 'wrap',
+            height: 'calc(100vh - 60px - 20px)', // Hardcoded values
+            relative_urls: false,
+            resize: false,
+            file_picker_callback: function (callback, value, meta) {
+                if (meta.filetype === 'image') {
+                    app.type = 'image';
+                } else {
+                    app.type = null;
+                }
+
+                app.pickFile(callback);
+            },
+            images_upload_handler: uploadImage,
+        });
+
+    </script>
+
+    <form class="grid grid-rows-[auto_1fr] h-screen" method="POST">
+        {% csrf_token %}
+        <header class="border-b border-[#dedede] flex justify-end items-center gap-x-2 bg-white px-2 md:px-8 h-[60px]">
+            <a href="{% url 'dashboard' %}" class="mr-auto font-semibold"><i
+                    class="fa-solid fa-fire mr-2 text-red-500 fa-xl"></i>
+                DJ CMS
+            </a>
+
+            {% if update_mode %}
+                {% if form.is_draft.value %}
+                    <button type="submit" name="is_draft" value="true"
+                            class="text-blue-500 text-sm inline-block px-2 py-2">Save draft
+                    </button>
+                {% else %}
+                    <button type="submit" name="is_draft" value="true"
+                            class="text-blue-500 text-sm inline-block px-2 py-2">Switch draft
+                    </button>
+                {% endif %}
+
+                <a href="#" class="text-blue-500 text-sm inline-block px-2 py-2">Preview</a>
+
+                {% if form.is_draft.value %}
+                    <button type="submit"
+                            name="is_draft"
+                            value="false"
+                            class="inline-block px-4 py-2 rounded-[2px] text-[13px] text-white bg-blue-500">
+                        Publish
+                    </button>
+                {% else %}
+                    <button type="submit"
+                            name="is_draft"
+                            value="false"
+                            class="inline-block px-4 py-2 rounded-[2px] text-[13px] text-white bg-blue-500">
+                        Update
+                    </button>
+                {% endif %}
+            {% else %}
+                <a href="#" class="text-gray-500 text-sm inline-block px-2 py-2 bg-gray-100">Save draft</a>
+                <a href="#" class="text-gray-500 text-sm inline-block px-2 py-2 bg-gray-100">Preview</a>
+
+                <button type="submit" class="inline-block px-4 py-2 rounded-[2px] text-[13px] text-white bg-blue-500">
+                    Publish
+                </button>
+            {% endif %}
+        </header>
+
+        <div class="bg-white grid grid-cols-[1fr_360px]">
+            <div class="px-2 md:px-8 mt-5">
+                <textarea name="content" class="resize-none" aria-label="Post Editor" id="editorArea"
+                          placeholder="Start writing here...">{% if form.content.value %}
+                    {{ form.content.value }}{% endif %}</textarea>
+            </div>
+
+            <div class="border-l bg-[#1d2327] text-white" style="height: calc(100vh - 60px); overflow-y: scroll">
+                <div class="border-b border-[#dedede] px-4 py-2">
+                    <span class="text-lg text-[#dddddds]">Post</span>
+                </div>
+
+                <div class="px-2 mt-2">
+                    <input type="text" class="px-2 py-1 w-full outline-none border rounded bg-transparent"
+                           placeholder="Add title"
+                           name="title" aria-label="Post title"
+                            {% if form.title.value %}
+                           value="{{ form.title.value }}"
+                            {% endif %}
+                           autofocus>
+                </div>
+
+                <div class="px-2 mt-2">
+                    <textarea type="text"
+                              class="outline-none resize-none h-[120px] px-2 py-1 w-full border rounded bg-transparent"
+                              placeholder="Meta description"
+                              name="meta_description"
+                              aria-label="Meta description">{% spaceless %}
+                        {% if form.meta_description.value %}
+                            {{ form.meta_description.value }}
+                        {% endif %}{% endspaceless %}</textarea>
+                </div>
+
+                <div class="px-2 mt-2">
+                    <label for="slug" class="text-sm">Slug</label>
+                    <input type="text" class="px-2 py-1 w-full outline-none border rounded bg-transparent"
+                           placeholder="Leave empty to auto generate"
+                           name="slug" aria-label="Slug"
+                            {% if form.slug.value %}
+                           value="{{ form.slug.value }}"
+                            {% endif %}
+                           autofocus>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

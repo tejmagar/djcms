@@ -1,0 +1,20 @@
+{% extends 'layouts/default.html' %}
+
+{% block title %}
+    <title>Media Library - DJ CMS</title>
+{% endblock %}
+
+{% block content %}
+    {% include 'components/media-picker.html' %}
+
+    <div class="p-8 h-full flex justify-center items-center">
+        <button onclick="app.pickFile();"
+                class="text-sm text-blue-500 border-blue-500 underline decoration-blue-500 underline-offset-4 rounded">
+            Open media browser
+        </button>
+
+        <script>
+            app.pickFile();
+        </script>
+    </div>
+{% endblock %}
