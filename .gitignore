@@ -1,5 +1,5 @@
 node_modules/
 .idea/
-media/
+/media/
 static/
 docker-compose.yml
