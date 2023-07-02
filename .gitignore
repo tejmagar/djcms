@@ -2,4 +2,6 @@ node_modules/
 .idea/
 /media/
 static/
+**/__pycache__/
+**/migrations/
 docker-compose.yml
