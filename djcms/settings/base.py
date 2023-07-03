@@ -112,8 +112,6 @@ STATIC_URL = 'static/'
 
 MEDIA_URL = 'media/'
 
-SERVE_STATIC = strtobool(os.environ.get('SERVE_STATIC', 'False'))
-
 STATIC_ROOT = BASE_DIR / 'static'
 
 MEDIA_ROOT = BASE_DIR / 'media'
