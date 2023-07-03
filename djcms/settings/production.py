@@ -1,5 +1,3 @@
-import os
-
 from .base import *
 
 from distutils.util import strtobool
