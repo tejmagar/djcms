@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
+from distutils.util import strtobool
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -109,6 +111,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 MEDIA_URL = 'media/'
+
+SERVE_STATIC = strtobool(os.environ.get('SERVE_STATIC', 'False'))
 
 STATIC_ROOT = BASE_DIR / 'static'
 

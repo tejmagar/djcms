@@ -21,14 +21,12 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from distutils.util import strtobool
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.dashboard.urls')),
     path('api/', include('api.urls'))
 ]
 
-if settings.DEBUG or strtobool(os.environ.get('SERVE_STATIC', 'False')):
+if settings.DEBUG or settings.SERVE_STATIC:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
