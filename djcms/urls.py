@@ -22,9 +22,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('apps.dashboard.urls')),
-    path('api/', include('api.urls'))
+    path('cms/admin/', admin.site.urls),
+    path('cms/', include('apps.dashboard.urls')),
+    path('cms/api/', include('api.urls'))
 ]
 
 if settings.DEBUG:
