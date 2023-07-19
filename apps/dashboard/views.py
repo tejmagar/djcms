@@ -286,9 +286,9 @@ class EditCategoryView(AuthorOrEditorMixin, View):
             'categories': Category.objects.all()
         })
 
-    def post(self, request, **kwargs) -> HttpResponse:
+    def post(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
         pk: int = kwargs.get('pk')
-        action_delete: str = request.POST.get('delete', None)
+        action_delete: Union[str, None] = request.POST.get('delete')
         category: Category = get_object_or_404(Category, pk=pk)
 
         # Handle delete action first
