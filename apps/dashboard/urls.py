@@ -6,6 +6,7 @@ from .views import (
     AllPostsView,
     EditPostView,
     CategoriesView,
+    EditCategoryView,
     TagsView,
     AllPagesView,
     AddPageView,
@@ -21,7 +22,9 @@ urlpatterns = [
     path('post/new/', AddPostView.as_view(), name='new_post'),
     path('post/edit/<int:pk>/', EditPostView.as_view(), name='edit_post'),
 
+    # Categories and tags
     path('categories/', CategoriesView.as_view(), name='categories'),
+    path('categories/edit/<int:pk>/', EditCategoryView.as_view(), name='edit_category'),
     path('tags/', TagsView.as_view(), name='tags'),
 
     # Pages

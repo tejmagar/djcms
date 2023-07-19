@@ -1,0 +1,19 @@
+{% extends 'layouts/default.html' %}
+
+{% block content %}
+    <div class="p-2 md:p-8">
+        <h1 class="inline-block text-xl">Edit Category</h1>
+
+        <form method="POST" class="mt-8 max-w-[600px]">
+            {% csrf_token %}
+            <div class="mt-4">
+                {% include 'components/category-form.html' %}
+
+                <div class="mt-4">
+                    <input type="submit" value="Update" class="bg-[#135e96] text-white px-4 py-1.5 text-[13px] rounded">
+                    <input type="submit" name="delete" value="Delete" class="text-red-500 px-4 py-1.5 text-[13px] rounded">
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

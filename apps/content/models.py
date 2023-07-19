@@ -11,23 +11,6 @@ from apps.content.utils.slugify import generate_unique_slug
 # Create your models here.
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=60)
-    slug = models.SlugField(blank=True, unique=True)
-    parent_category = models.ForeignKey(to='Category', null=True, blank=True, on_delete=models.DO_NOTHING)
-    description = models.TextField(null=True, blank=True)
-
-    class Meta:
-        verbose_name_plural = 'Categories'
-
-    def __str__(self):
-        return self.name
-
-    def clean(self):
-        if not self.slug:
-            self.slug = slugify(self.name)
-
-
 class StatusMixin(models.Model):
     is_draft = models.BooleanField(default=True)
     is_trash = models.BooleanField(default=False)
@@ -40,7 +23,7 @@ class Post(SeoMeta, StatusMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     content = models.TextField(null=True, blank=True)
     excerpt = models.TextField(null=True, blank=True)
-    categories = models.ManyToManyField(to=Category, blank=True)
+    categories = models.ManyToManyField(to='Category', blank=True)
     slug = models.SlugField(blank=True, unique=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -67,12 +50,29 @@ class Page(SeoMeta, StatusMixin):
     author = models.ForeignKey(to=get_user_model(), null=True, blank=True, on_delete=models.DO_NOTHING)
     slug = models.SlugField(blank=True, unique=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
+
+    def clean(self) -> None:
+        if not self.slug:
+            self.slug = generate_unique_slug(Page, self.title)
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=60)
+    slug = models.SlugField(blank=True, unique=True)
+    parent_category = models.ForeignKey(to='Category', null=True, blank=True, on_delete=models.DO_NOTHING)
+    description = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'Categories'
+
+    def __str__(self):
+        return self.name
 
     def clean(self):
         if not self.slug:
-            self.slug = generate_unique_slug(Page, self.title)
+            self.slug = slugify(self.name)
 
 
 class Tag(models.Model):
