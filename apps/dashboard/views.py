@@ -3,6 +3,7 @@ from dataclasses import dataclass, asdict
 from typing import Type
 
 from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.urls import reverse_lazy
 from django.views.generic import View, ListView
 from django.db.models import QuerySet, Model
 from django.http import Http404
@@ -141,7 +142,7 @@ class AbstractAddView(AuthorOrEditorMixin, View, ABC):
     template_name: str = 'edit-post.html'
     title: str = 'Add'
     form: Type[ModelForm] = None
-    redirect_reverse_name: str = None
+    redirect_success_url: str = None
 
     def get(self, request):
         return render(request, self.template_name, {
@@ -157,7 +158,7 @@ class AbstractAddView(AuthorOrEditorMixin, View, ABC):
         if form.is_valid():
             form.save()
             # To prevent form resubmit, redirect user to post editor area
-            return redirect(reverse(self.redirect_reverse_name))
+            return redirect(self.redirect_success_url)
 
         return render(request, self.template_name, {
             'form': form,
@@ -168,12 +169,12 @@ class AbstractAddView(AuthorOrEditorMixin, View, ABC):
 
 class AddPostView(AbstractAddView):
     form: Type[ModelForm] = PostForm
-    redirect_reverse_name: str = 'edit_post_select'
+    redirect_success_url: str = reverse_lazy('edit_post_select')
 
 
 class AddPageView(AbstractAddView):
     form: Type[ModelForm] = PageForm
-    redirect_reverse_name: str = 'edit_page_select'
+    redirect_success_url: str = reverse_lazy('edit_page_select')
 
 
 class AbstractEditContentView(View, ABC):
@@ -183,7 +184,7 @@ class AbstractEditContentView(View, ABC):
     """
 
     model_class: type[Model] = None
-    edit_content_select_reverse_url_name: str = None
+    edit_content_select_url: str = None
     # This path should accept the primary key argument
     edit_content_reverse_url_name: str = None
 
@@ -214,7 +215,7 @@ class AbstractEditContentView(View, ABC):
             performed = action.perform(action_type)
 
             if performed:
-                return redirect(reverse(self.edit_content_select_reverse_url_name))
+                return redirect(self.edit_content_select_url)
 
         # Continue editing post
         # Don't allow to edit trash post
@@ -237,13 +238,13 @@ class AbstractEditContentView(View, ABC):
 
 class EditPostView(AbstractEditContentView):
     model_class: Type[Model] = Post
-    edit_content_select_reverse_url_name: str = 'edit_post_select'
+    edit_content_select_url: str = reverse_lazy('edit_post_select')
     edit_content_reverse_url_name: str = 'edit_post'
 
 
 class EditPageView(AbstractEditContentView):
     model_class: Type[Model] = Page
-    edit_content_select_reverse_url_name: str = 'edit_page_select'
+    edit_content_select_url: str = reverse_lazy('edit_page_select')
     edit_content_reverse_url_name: str = 'edit_page'
 
 

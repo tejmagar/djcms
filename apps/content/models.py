@@ -67,6 +67,13 @@ class Page(SeoMeta, StatusMixin):
     author = models.ForeignKey(to=get_user_model(), null=True, blank=True, on_delete=models.DO_NOTHING)
     slug = models.SlugField(blank=True, unique=True)
 
+    def __str__(self):
+        return self.title
+
+    def clean(self):
+        if not self.slug:
+            self.slug = generate_unique_slug(Page, self.title)
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=200)
