@@ -54,9 +54,23 @@
         </li>
 
         <li>
-                <span class="px-4 py-2 my-1 border-l-4 border-transparent hover:border-blue-500 block text-[14px]">
-                    <i class="fa-solid fa-file fa-lg w-[28px]"></i>Pages
-                </span>
+            {% should_expand_menu 'pages' as expand_page %}
+
+            <a href="{% url 'edit_page_select' %}"
+               class="px-4 py-2 border-l-4 border-transparent block text-[14px] {% if expand_page %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+                <i class="fa-solid fa-file fa-lg w-[28px]"></i>Pages
+            </a>
+
+            {% if expand_page %}
+                <ul class="bg-[#2c3338] py-2">
+                    <li class="px-4 py-1 border-l-4 border-transparent hover:border-blue-500">
+                        <a href="{% url 'edit_page_select' %}" class="block">All Pages</a>
+                    </li>
+                    <li class="px-4 py-1 border-l-4 border-transparent  hover:border-blue-500">
+                        <a href="{% url 'new_page' %}" class="block">Add New</a>
+                    </li>
+                </ul>
+            {% endif %}
         </li>
 
         <li>

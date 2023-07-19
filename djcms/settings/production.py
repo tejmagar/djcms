@@ -1,6 +1,6 @@
-from .base import *
-
 from distutils.util import strtobool
+
+from .base import *
 
 SECRET_KEY = os.environ['SECRET_KEY']
 

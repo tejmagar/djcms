@@ -1,6 +1,6 @@
 from django import forms
 
-from apps.content.models import Post, Category, Tag
+from apps.content.models import Category, Post, Page, Tag
 
 
 class PostForm(forms.ModelForm):
@@ -23,3 +23,11 @@ class TagForm(forms.ModelForm):
     class Meta:
         model = Tag
         fields = '__all__'
+
+
+class PageForm(forms.ModelForm):
+    content = forms.CharField(required=False)
+
+    class Meta:
+        model = Page
+        fields = ('title', 'content', 'meta_description', 'slug', 'is_draft')

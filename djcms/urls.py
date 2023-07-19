@@ -13,19 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-import os
-
-from django.contrib import admin
-from django.urls import path, include
 
 from django.conf import settings
-from django.conf.urls.static import static
+from django.urls import include, path
 
+# Allow DJ CMS to work with base url
+# By default BASE_URL is to None
 urlpatterns = [
-    path('cms/admin/', admin.site.urls),
-    path('cms/', include('apps.dashboard.urls')),
-    path('cms/api/', include('api.urls'))
+    path(settings.BASE_URL if settings.BASE_URL else '', include('apps.main.urls'), name='main')
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

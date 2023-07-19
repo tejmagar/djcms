@@ -1,15 +1,13 @@
+from rest_framework import status
 from rest_framework.generics import GenericAPIView, get_object_or_404
-
 from rest_framework.parsers import MultiPartParser
-
-from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.media.models import Upload
-from .serializers import FileUploadSerializer, FileSerializer
 
-from rest_framework.views import APIView
-from rest_framework import status
+from .serializers import FileSerializer, FileUploadSerializer
 
 
 class UploadView(GenericAPIView):

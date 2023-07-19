@@ -113,12 +113,30 @@
                     {{ form.content.value }}{% endif %}</textarea>
             </div>
 
-            <div class="border-l bg-[#1d2327] text-white" style="height: calc(100vh - 60px); overflow-y: scroll">
+            <div class="border-l bg-[#1d2327] text-white" style="height: calc(100vh - 60px); overflow-y: auto">
                 <div class="border-b border-[#dedede] px-4 py-2">
                     <span class="text-lg text-[#dddddds]">Post</span>
                 </div>
 
-                <div class="px-2 mt-2">
+                {% if form.non_field_errors.items or form.errors %}
+                    <div class="mx-2 my-2 p-1 border border-red-500 rounded">
+                        <span class="text-sm text-red-500 block">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            Could not save the post
+                        </span>
+
+                        {% for error in non_field_errors.as_ul %}
+                            {{ error }}
+                        {% endfor %}
+
+                        {% if form.erros.content %}
+                            <span class="text-sm text-red-500 block mt-1">{{ form.errors.content }}</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <div class="px-2 py-1 mt-2">
+                    <label for="title" class="text-sm">Title</label>
                     <input type="text" class="px-2 py-1 w-full outline-none border rounded bg-transparent"
                            placeholder="Add title"
                            name="title" aria-label="Post title"
@@ -126,20 +144,25 @@
                            value="{{ form.title.value }}"
                             {% endif %}
                            autofocus>
+
+                    <span class="text-sm text-red-500 block mt-1">{{ form.errors.title }}</span>
                 </div>
 
-                <div class="px-2 mt-2">
+                <div class="px-2 py-1 mt-2">
+                    <label for="meta_description" class="text-sm">Meta description</label>
                     <textarea type="text"
                               class="outline-none resize-none h-[120px] px-2 py-1 w-full border rounded bg-transparent"
-                              placeholder="Meta description"
+                              placeholder="Use max of 155 characters"
                               name="meta_description"
                               aria-label="Meta description">{% spaceless %}
                         {% if form.meta_description.value %}
                             {{ form.meta_description.value }}
                         {% endif %}{% endspaceless %}</textarea>
+
+                    <span class="text-sm text-red-500 block mt-1">{{ form.errors.meta_description }}</span>
                 </div>
 
-                <div class="px-2 mt-2">
+                <div class="px-2 py-1 mt-2">
                     <label for="slug" class="text-sm">Slug</label>
                     <input type="text" class="px-2 py-1 w-full outline-none border rounded bg-transparent"
                            placeholder="Leave empty to auto generate"
@@ -148,6 +171,7 @@
                            value="{{ form.slug.value }}"
                             {% endif %}
                            autofocus>
+                    <span class="text-sm text-red-500 block mt-1">{{ form.errors.slug }}</span>
                 </div>
             </div>
         </div>

@@ -10,9 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
-from pathlib import Path
-
 from distutils.util import strtobool
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -122,3 +121,5 @@ STATICFILES_DIRS = ['public/']
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+BASE_URL = None

@@ -1,7 +1,7 @@
 from django.urls import path
 
+from .media.views import FileDelete, FilesListView, UploadView
 from .posts.views import PostListView, PostVIew
-from .media.views import UploadView, FilesListView, FileDelete
 
 urlpatterns = [
     path('v1/posts/', PostListView.as_view(), name='posts'),

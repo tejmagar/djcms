@@ -1,8 +1,10 @@
-from rest_framework.generics import ListAPIView, GenericAPIView, get_object_or_404
+from rest_framework.generics import (GenericAPIView, ListAPIView,
+                                     get_object_or_404)
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from apps.content.models import Post
+
 from .serializers import PostIndexSerializer, PostSerializer
 
 
