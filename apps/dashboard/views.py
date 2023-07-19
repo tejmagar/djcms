@@ -64,13 +64,13 @@ class AllContentView(AuthorOrEditorMixin, ListView, ABC):
     draft_posts_count: int = 0
 
     def get_queryset(self) -> QuerySet:
-        post_status = self.request.GET.get('post_status', 'all')
+        post_status: str = self.request.GET.get('post_status', 'all')
         if not self.model_class:
             raise Exception('Please provide compatible model class')
 
-        self.content_query = ContentQuery(self.model_class, self.request.user)
+        self.content_query: ContentQuery = ContentQuery(self.model_class, self.request.user)
 
-        queryset = self.content_query.get_posts_queryset(post_status)
+        queryset: QuerySet = self.content_query.get_queryset(post_status)
         if queryset is None:
             raise Http404()
 

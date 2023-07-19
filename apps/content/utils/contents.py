@@ -13,7 +13,7 @@ class ContentQuery:
         self.model_class = model_class
         self.user = user
 
-    def get_all_posts(self) -> QuerySet:
+    def get_all(self) -> QuerySet:
         """
         Returns all non trashed posts queryset
         """
@@ -23,7 +23,7 @@ class ContentQuery:
 
         return self.model_class.objects.filter(author=self.user, is_trash=False)
 
-    def get_published_posts(self) -> QuerySet:
+    def get_published(self) -> QuerySet:
         """
         Returns all posts queryset which is not draft and not trashed
         """
@@ -33,7 +33,7 @@ class ContentQuery:
 
         return self.user.objects.filter(author=self.user, is_trash=False, is_draft=False)
 
-    def get_draft_posts(self) -> QuerySet:
+    def get_draft(self) -> QuerySet:
         """
         Returns all draft post queryset which is not trashed
         """
@@ -43,7 +43,7 @@ class ContentQuery:
 
         return self.model_class.objects.filter(author=self.user, is_draft=True, is_trash=False)
 
-    def get_trash_posts(self) -> QuerySet:
+    def get_trash(self) -> QuerySet:
         """
         Returns all posts queryset with status is_trash=True
         """
@@ -53,12 +53,12 @@ class ContentQuery:
 
         return self.model_class.objects.filter(author=self.user, is_trash=True)
 
-    def get_posts_queryset(self, post_status: str) -> Union[QuerySet, None]:
+    def get_queryset(self, post_status: str) -> Union[QuerySet, None]:
         status_methods = {
-            'all': self.get_all_posts,
-            'published': self.get_published_posts,
-            'draft': self.get_draft_posts,
-            'trash': self.get_trash_posts
+            'all': self.get_all,
+            'published': self.get_published,
+            'draft': self.get_draft,
+            'trash': self.get_trash
         }
 
         posts = status_methods.get(post_status, None)
