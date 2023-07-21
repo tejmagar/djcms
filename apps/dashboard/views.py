@@ -12,7 +12,7 @@ from django.http import Http404
 from django.forms import ModelForm
 from django.http.request import HttpRequest
 
-from apps.content.models import Category, Post, Tag, Page, StatusMixin
+from apps.content.models import Category, Post, Tag, Page, StatusMixin, SeoMeta
 from apps.content.utils.status import StatusAction
 from apps.content.utils.contents import ContentQuery
 
@@ -46,7 +46,7 @@ class DashboardView(SuperuserPermissionMixin, View):
         return render(request, 'dashboard.html')
 
 
-class AllContentView(AuthorOrEditorMixin, ListView, ABC):
+class AbstractAllContentView(AuthorOrEditorMixin, ListView, ABC):
     """
     Show the content created by current author only but allow superuser to access all the specified content.
     Superuser can do all the CRUD operations.
@@ -69,7 +69,7 @@ class AllContentView(AuthorOrEditorMixin, ListView, ABC):
             raise Exception('Please provide compatible model class')
 
         self.content_query: ContentQuery = ContentQuery(self.model_class, self.request.user)
-
+        # Fetching role wise items from database
         queryset: QuerySet = self.content_query.get_queryset(post_status)
         if queryset is None:
             raise Http404()
@@ -100,7 +100,7 @@ class AllContentView(AuthorOrEditorMixin, ListView, ABC):
         return super().render_to_response(context, **response_kwargs)
 
 
-class AllPostsView(AllContentView):
+class AllPostsView(AbstractAllContentView):
     """
     List all posts based on status.
     Listing logic is handled by AllContentView
@@ -117,7 +117,7 @@ class AllPostsView(AllContentView):
         )
 
 
-class AllPagesView(AllContentView):
+class AbstractAllPagesView(AbstractAllContentView):
     """
     List all pages based on status.
     Listing logic is handled by AllContentView
@@ -184,6 +184,8 @@ class AbstractEditContentView(AuthorOrEditorMixin, View, ABC):
     """
     This view handles the post which is already saved in the database.
     Set 'update_mode': True, so that template knows we are editing the post.
+
+    This view also handles actions like restore/trash/delete for specific instance
     """
 
     model_class: type[Model] = None
@@ -191,12 +193,25 @@ class AbstractEditContentView(AuthorOrEditorMixin, View, ABC):
     # This path should accept the primary key argument
     edit_content_reverse_url_name: str = None
 
+    def get_validated_instance(self, pk: int) -> StatusMixin:
+        """
+        Only allow to perform operations if the user has right else raise Http404 error
+        Returns a model extending StatusMixin
+        """
+
+        if self.request.user.is_superuser:
+            return get_object_or_404(self.model_class, pk=pk)
+
+        return get_object_or_404(self.model_class, pk=pk, author=self.request.user)
+
     def get(self, request, **kwargs):
         if not self.model_class:
             raise Exception('Please provide compatible model class')
 
         pk = kwargs.get('pk')
-        instance = get_object_or_404(self.model_class, pk=pk, is_trash=False)
+
+        # Any model class which extends StatusMixin can be used
+        instance: StatusMixin = self.get_validated_instance(pk)
         form = PostForm(instance=instance)
 
         return render(request, 'edit-post.html', {
@@ -212,7 +227,7 @@ class AbstractEditContentView(AuthorOrEditorMixin, View, ABC):
         action_type: Union[str, None] = request.GET.get('action')
 
         # Any model class which extends StatusMixin can be used
-        instance: StatusMixin = get_object_or_404(self.model_class, pk=pk)
+        instance: StatusMixin = self.get_validated_instance(pk)
 
         # At first, check if there is any actions to perform like trash/restore/delete
         if action_type:
@@ -253,79 +268,146 @@ class EditPageView(AbstractEditContentView):
     edit_content_reverse_url_name: str = 'edit_page'
 
 
-class CategoriesView(AuthorOrEditorMixin, View):
-    def get(self, request):
-        form: ModelForm = CategoryForm()
+class AbstractGroupView(AuthorOrEditorMixin, View):
+    """
+    This is the abstract class for handling group items like Categories and Tags.
+    """
 
-        return render(request, 'categories.html', {
+    template_name: str = None
+    form_class: Type[ModelForm] = None
+    form_success_redirect_url: str = None
+    model_class: Type[Model] = None
+
+    def validate(self):
+        if not self.template_name:
+            raise Exception('Please provide a template name')
+
+        if not self.form_class:
+            raise Exception('Please provide compatible form class')
+
+        if not self.form_success_redirect_url:
+            raise Exception('Please provide a url to redirect after saving form')
+
+    def get_items(self, order_by: str = '-pk') -> Union[QuerySet, None]:
+        if not self.model_class:
+            return None
+
+        return self.model_class.objects.order_by(order_by).all()
+
+    def get(self, request):
+        self.validate()
+
+        form: ModelForm = self.form_class()
+        return render(request, self.template_name, {
             'form': form,
-            'categories': Category.objects.all()
+            'items': self.get_items()
         })
 
     def post(self, request):
-        form: ModelForm = CategoryForm(data=request.POST)
+        self.validate()
 
+        form: ModelForm = self.form_class(data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect(reverse('categories'))
+            return redirect(self.form_success_redirect_url)
 
-        return render(request, 'categories.html', {
+        return render(request, self.template_name, {
             'form': form,
-            'categories': Category.objects.all()
+            'items': self.get_items()
         })
 
 
-class EditCategoryView(AuthorOrEditorMixin, View):
-    def get(self, request, **kwargs) -> HttpResponse:
-        pk: int = kwargs.get('pk')
-        category: Category = get_object_or_404(Category, pk=pk)
-        form: ModelForm = CategoryForm(instance=category)
+class CategoriesView(AbstractGroupView):
+    template_name = 'categories.html'
+    form_class = CategoryForm
+    form_success_redirect_url = reverse_lazy('categories')
+    model_class = Category
 
-        return render(request, 'edit-category.html', {
+
+class AbstractEditGroupView(AuthorOrEditorMixin, View):
+    """
+    Reusable class for Categories and Tags View
+    """
+
+    model_class: Type[Model]
+    template_name = None
+    form_class: Type[ModelForm] = None
+    redirect_delete_url: str
+    edit_category_url_name: str
+
+    def validate(self):
+        if not self.model_class:
+            raise Exception('Please provide compatible model class')
+
+        if not self.template_name:
+            raise Exception('Please provide template to use')
+
+        if not self.form_class:
+            raise Exception('Please provide form class')
+
+        if not self.redirect_delete_url:
+            raise Exception("Please provide a url to redirect after deletion")
+
+        if not self.edit_category_url_name:
+            raise Exception('Please provide a reverse url name to edit the instance')
+
+    def get(self, request, **kwargs) -> HttpResponse:
+        self.validate()
+
+        pk: int = kwargs.get('pk')
+        instance: Model = get_object_or_404(self.model_class, pk=pk)
+        form: ModelForm = self.form_class(instance=instance)
+
+        return render(request, self.template_name, {
             'form': form,
-            'categories': Category.objects.all()
+            'items': self.model_class.objects.all()
         })
 
     def post(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
+        self.validate()
+
         pk: int = kwargs.get('pk')
         action_delete: Union[str, None] = request.POST.get('delete')
-        category: Category = get_object_or_404(Category, pk=pk)
+        instance: Model = get_object_or_404(self.model_class, pk=pk)
 
         # Handle delete action first
         if action_delete:
-            category.delete()
-            return redirect(reverse('categories'))
+            instance.delete()
+            return redirect(self.redirect_delete_url)
 
         # Handle update logic
-        form: ModelForm = CategoryForm(instance=category, data=request.POST)
+        form: ModelForm = self.form_class(instance=instance, data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect(reverse('edit_category', kwargs={'pk': category.pk}))
+            return redirect(reverse(self.edit_category_url_name, kwargs={'pk': instance.pk}))
 
-        return render(request, 'edit-category.html', {
+        return render(request, self.template_name, {
             'form': form,
-            'categories': Category.objects.all()
+            'items': self.model_class.objects.all()
         })
 
 
-class TagsView(View):
-    def get(self, request):
-        form = TagForm()
+class EditGroupView(AbstractEditGroupView):
+    model_class = Category
+    template_name = 'edit-category.html'
+    form_class = CategoryForm
+    redirect_delete_url = reverse_lazy('categories')
+    edit_category_url_name = 'edit_category'
 
-        return render(request, 'tags.html', {
-            'form': form,
-            'tags': Tag.objects.all()
-        })
 
-    def post(self, request):
-        form = TagForm(data=request.POST)
+class TagsView(AbstractGroupView):
+    template_name = 'tags.html'
+    form_class = TagForm
+    form_success_redirect_url = reverse_lazy('tags')
+    model_class = Tag
 
-        if form.is_valid():
-            form.save()
-            return redirect(reverse('tags'))
 
-        print(form.errors)
-        return render(request, 'tags.html')
+class EditTagView(AbstractEditGroupView):
+    model_class = Tag
+    template_name = 'edit-tag.html'
+    form_class = TagForm
+    redirect_delete_url = reverse_lazy('tags')
+    edit_category_url_name = 'edit_tag'
 
 
 class MediaView(View):

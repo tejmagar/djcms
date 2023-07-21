@@ -38,7 +38,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for category in categories %}
+                        {% for category in items %}
                             <tr class="group text-sm {% cycle 'odd:bg-[#f6f7f7]' 'even:bg-white' %}">
                                 <td class="font-normal text-blue-600 px-4 align-top text-sm py-2">
                                     {{ category.name }}
@@ -48,9 +48,12 @@
                                         </a>
                                         <span class="text-gray-500 mx-1">|</span>
 
-                                        <a href="" class="text-red-500">
-                                            Delete
-                                        </a>
+                                        <!-- Delete form -->
+                                        <form action="{% url 'edit_category' category.pk %}" method="POST" href=""
+                                              class="inline text-red-500">
+                                            {% csrf_token %}
+                                            <input type="submit" name="delete" value="Delete">
+                                        </form>
                                         <!-- End delete permanent form -->
 
                                         <span class="text-gray-500 mx-1">|</span>
@@ -75,7 +78,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    {% if not categories %}
+                    {% if not items %}
                         <span class="block p-4 text-sm">No categories created yet</span>
                     {% endif %}
                 </div>

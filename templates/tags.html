@@ -23,37 +23,65 @@
                     </div>
                 </div>
             </form>
-
-            <div class="md:p-8">
-                <table class="w-full bg-white rounded-lg">
-                    <thead class="border-b border-[#dfdfdf]">
-                    <tr class="text-sm border-b border-[#dedede]">
-                        <th class="font-normal text-blue-600 py-2 w-1/4 text-start px-4">Name</th>
-                        <th class="font-normal text-blue-600 w-1/4 text-start px-4 hidden sm:table-cell">Description
-                        </th>
-                        <th class="font-normal text-blue-600 w-1/4 text-start px-4 hidden md:table-cell">Slug</th>
-                        <th class="font-normal text-blue-600 py-2 w-1/6 text-end px-4 hidden lg:table-cell">Count</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for tag in tags %}
-                        <tr class="text-sm {% cycle 'odd:bg-[#f6f7f7]' 'even:bg-white' %}">
-                            <th class="font-normal text-blue-600 py-2 w-1/4 text-start px-4">{{ tag.name }}</th>
-                            <th class="font-normal w-1/4 text-start text-gray-600 px-4 hidden sm:table-cell">
-                                {% if tag.description == '' %}
-                                   —
-                                {% else %}
-                                    {{ tag.description }}
-                                {% endif %}
+        
+            <div class="p-0 lg:p-8">
+                <div class="bg-white rounded-xl">
+                    <table class="w-full">
+                        <thead class="border-b border-[#dfdfdf]">
+                        <tr class="text-sm border-b border-[#dedede]">
+                            <th class="font-normal text-blue-600 py-2 w-1/4 text-start px-4">Name</th>
+                            <th class="font-normal text-blue-600 w-1/4 text-start px-4 hidden sm:table-cell">Description
                             </th>
-                            <th class="font-normal w-1/4 text-start text-[13px] text-gray-600 px-4 hidden md:table-cell">{{ tag.slug }}</th>
-                            <th class="font-normal text-blue-600 py-2 w-1/6 text-end px-4 hidden lg:table-cell">
-                                0
+                            <th class="font-normal text-blue-600 w-1/4 text-start px-4 hidden md:table-cell">Slug</th>
+                            <th class="font-normal text-blue-600 py-2 w-1/6 text-end px-4 hidden lg:table-cell">Count
                             </th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {% for tag in items %}
+                            <tr class="group text-sm {% cycle 'odd:bg-[#f6f7f7]' 'even:bg-white' %}">
+                                <td class="font-normal text-blue-600 px-4 align-top text-sm py-2">
+                                    {{ tag.name }}
+                                    <div class="my-1 invisible group-hover:visible text-[12px] text-blue-500">
+                                        <a href="{% url 'edit_tag' tag.pk %}" class="text-blue-500">
+                                            Edit
+                                        </a>
+                                        <span class="text-gray-500 mx-1">|</span>
+
+                                        <!-- Delete form -->
+                                        <form action="{% url 'edit_tag' tag.pk %}" method="POST" href=""
+                                              class="inline text-red-500">
+                                            {% csrf_token %}
+                                            <input type="submit" name="delete" value="Delete">
+                                        </form>
+                                        <!-- End delete permanent form -->
+
+                                        <span class="text-gray-500 mx-1">|</span>
+
+                                        <a href="" class="text-blue-500">
+                                            View
+                                        </a>
+                                    </div>
+                                </td>
+                                <td class="font-normal w-1/4 align-top text-start text-gray-600 px-4 py-2 hidden sm:table-cell">
+                                    {% if tag.description == '' %}
+                                        —
+                                    {% else %}
+                                        {{ tag.description }}
+                                    {% endif %}
+                                </td>
+                                <td class="font-normal w-1/4 align-top text-start text-[13px] text-gray-600 px-4 py-2 hidden md:table-cell">{{ tag.slug }}</td>
+                                <td class="font-normal text-blue-600 w-1/6 align-top text-end px-4 py-2 hidden lg:table-cell">
+                                    0
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if not items %}
+                        <span class="block p-4 text-sm">No tags created yet</span>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
