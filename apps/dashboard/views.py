@@ -231,6 +231,7 @@ class AbstractEditContentView(AuthorOrEditorMixin, View, ABC):
 
         # At first, check if there is any actions to perform like trash/restore/delete
         if action_type:
+            # Let the custom StatusAction handle the operations
             action: StatusAction = StatusAction(instance)
             performed: bool = action.perform(action_type)
 
