@@ -28,7 +28,8 @@
                 </li>
                 <li>
                     <a href="{% url 'new_post' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'new_post' %}font-semibold text-white{% endif %}">Add New</a>
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'new_post' %}font-semibold text-white{% endif %}">Add
+                        New</a>
                 </li>
                 <li>
                     <a href="{% url 'categories' %}"
@@ -68,11 +69,13 @@
             <ul class="bg-[#2c3338] py-2" {% if expand_pages %}data-menu-selected="true"{% endif %} data-menu="pages">
                 <li>
                     <a href="{% url 'edit_page_select' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'edit_page_select' %}font-semibold text-white{% endif %}">All Pages</a>
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'edit_page_select' %}font-semibold text-white{% endif %}">All
+                        Pages</a>
                 </li>
                 <li>
                     <a href="{% url 'new_page' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent  hover:border-blue-500 {% if current_url_name == 'new_page' %}font-semibold text-white{% endif %}">Add New</a>
+                       class="block px-4 py-1 border-l-4 border-transparent  hover:border-blue-500 {% if current_url_name == 'new_page' %}font-semibold text-white{% endif %}">Add
+                        New</a>
                 </li>
             </ul>
         </li>
@@ -88,17 +91,18 @@
             <ul class="bg-[#2c3338] py-2" {% if expand_users %}data-menu-selected="true"{% endif %} data-menu="users">
                 <li>
                     <a href="{% url 'all_users' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'all_users' %}font-semibold text-white{% endif %}">All Users</a>
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'all_users' %}font-semibold text-white{% endif %}">All
+                        Users</a>
                 </li>
 
                 <li>
-                    <a href=""
+                    <a href="{% url 'add_user' %}"
                        class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500">Add New</a>
                 </li>
 
                 <li>
-                    <a href=""
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500">Profile</a>
+                    <a href="{% url 'edit_profile' %}"
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'edit_profile' %}font-semibold text-white{% endif %}">Profile</a>
                 </li>
             </ul>
         </li>

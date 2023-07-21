@@ -17,6 +17,9 @@ class User(AbstractUser):
 
         AUTHOR = 'author'
         EDITOR = 'editor'
+        SEO = 'seo'
 
     # User role in DJ CMS
     role = models.CharField(max_length=60, choices=Roles.choices, null=True, blank=True)
+    photo = models.ImageField(upload_to='uploads/', null=True, blank=True)
+

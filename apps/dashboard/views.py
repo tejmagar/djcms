@@ -11,15 +11,16 @@ from django.db.models import QuerySet, Model
 from django.http import Http404
 from django.forms import ModelForm
 from django.http.request import HttpRequest
+from django.contrib.auth import get_user_model, login
 
 from apps.content.models import Category, Post, Tag, Page, StatusMixin
 from apps.content.utils.status import StatusAction
 from apps.content.utils.contents import ContentQuery
 
-from .forms import CategoryForm, PostForm, TagForm, PageForm
+from .forms import CategoryForm, PostForm, TagForm, PageForm, UserForm, AddUserForm
 from .permissions import (
     SuperuserPermissionMixin,
-    AuthorOrEditorMixin
+    AuthorMixin
 )
 
 
@@ -46,7 +47,7 @@ class DashboardView(SuperuserPermissionMixin, View):
         return render(request, 'dashboard.html')
 
 
-class AbstractAllContentView(AuthorOrEditorMixin, ListView, ABC):
+class AbstractAllContentView(AuthorMixin, ListView, ABC):
     """
     Show the content created by current author only but allow superuser to access all the specified content.
     Superuser can do all the CRUD operations.
@@ -134,7 +135,7 @@ class AbstractAllPagesView(AbstractAllContentView):
         )
 
 
-class AbstractAddView(AuthorOrEditorMixin, View, ABC):
+class AbstractAddView(AuthorMixin, View, ABC):
     """
     Allow author and editor role to access the add post view.
     Superuser also has access permission to this page.
@@ -180,7 +181,7 @@ class AddPageView(AbstractAddView):
     redirect_success_url: str = reverse_lazy('edit_page_select')
 
 
-class AbstractEditContentView(AuthorOrEditorMixin, View, ABC):
+class AbstractEditContentView(AuthorMixin, View, ABC):
     """
     This view handles the post which is already saved in the database.
     Set 'update_mode': True, so that template knows we are editing the post.
@@ -269,7 +270,7 @@ class EditPageView(AbstractEditContentView):
     edit_content_reverse_url_name: str = 'edit_page'
 
 
-class AbstractGroupView(AuthorOrEditorMixin, View):
+class AbstractGroupView(AuthorMixin, View):
     """
     This is the abstract class for handling group items like Categories and Tags.
     """
@@ -325,7 +326,7 @@ class CategoriesView(AbstractGroupView):
     model_class = Category
 
 
-class AbstractEditGroupView(AuthorOrEditorMixin, View):
+class AbstractEditGroupView(AuthorMixin, View):
     """
     Reusable class for Categories and Tags View
     """
@@ -416,6 +417,82 @@ class MediaView(View):
         return render(request, 'media.html')
 
 
-class AllUsers(SuperuserPermissionMixin, View):
+class AllUsers(SuperuserPermissionMixin, ListView):
+    title: str = 'Users'
+    template_name = 'all-users.html'
+    queryset = get_user_model().objects.get_queryset()
+    paginate_by = 50
+
+    def get_extra_context(self) -> dict:
+        return {
+            'title': self.title,
+            'all_users_count': get_user_model().objects.all().count(),
+            'administrator_count': get_user_model().objects.filter(is_superuser=True, is_staff=True).count()
+        }
+
+    def render_to_response(self, context: Any, **response_kwargs: Any):
+        context = {
+            **self.get_extra_context(),
+            **context
+        }
+        return super().render_to_response(context, **response_kwargs)
+
+
+class AddUser(SuperuserPermissionMixin, View):
     def get(self, request: HttpRequest) -> HttpResponse:
-        return render(request, 'all-users.html')
+        form: ModelForm = AddUserForm()
+        return render(request, 'add-user.html', {
+            'form': form
+        })
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        form: ModelForm = AddUserForm(data=request.POST)
+        if form.is_valid():
+            model: get_user_model() = form.save(commit=False)
+            password: str = form.cleaned_data.get('password')
+            model.set_password(password)
+            model.save()
+            return redirect(reverse('all_users'))
+
+        return render(request, 'add-user.html', {
+            'form': form
+        })
+
+
+class EditUserView(SuperuserPermissionMixin, View):
+    def get(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
+        pk: int = kwargs.get('pk')
+        if pk:
+            instance: get_user_model() = get_object_or_404(get_user_model(), pk=pk)
+        else:
+            instance = request.user
+
+        form: ModelForm = UserForm(instance=instance)
+        return render(request, 'edit-user.html', {
+            'form': form
+        })
+
+    def post(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
+        pk: int = kwargs.get('pk')
+        if pk:
+            instance: get_user_model() = get_object_or_404(get_user_model(), pk=pk)
+        else:
+            instance = request.user
+
+        form: ModelForm = UserForm(instance=instance, data=request.POST)
+        if form.is_valid():
+            model: get_user_model() = form.save(commit=False)
+
+            password = form.cleaned_data.get('password')
+            if password:
+                model.set_password(password)
+                model.save()
+
+                # User is logout so login user
+                login(request, model)
+
+            return redirect(reverse('edit_user', kwargs={'pk': pk}) if pk else reverse('edit_profile'))
+
+        return render(request, 'edit-user.html', {
+            'form': form
+        })

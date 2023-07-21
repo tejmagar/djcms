@@ -1,0 +1,74 @@
+{% csrf_token %}
+<div class="mt-6 text-sm grid grid-cols-[150px_1fr] items-center gap-x-8 gap-y-6">
+
+    <label for="username" class="font-medium">Username</label>
+
+    <div>
+        <input aria-label="username" type="text" name="username"
+               class="w-full p-1 rounded border border-black"
+               value="{% if form.username.value %}{{ form.username.value }}{% endif %}">
+        {% if form.errors.username %}
+            <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.username }}</span>
+        {% endif %}
+    </div>
+
+    <label for="role" class="font-medium">Role</label>
+    <div>
+        {{ form.role }}
+    </div>
+
+    <label for="first_name" class="font-medium">First Name</label>
+    <div>
+        <input aria-label="firstname" type="text" name="first_name"
+               class="w-full p-1 rounded border border-black"
+               value="{% if form.first_name.value %}{{ form.first_name.value }}{% endif %}">
+        {% if form.errors.first_name %}
+            <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.first_name }}</span>
+        {% endif %}
+    </div>
+
+    <label for="last_name" class="font-medium">Last Name</label>
+    <div>
+        <input aria-label="lastname" type="text" name="last_name"
+               class="w-full p-1 rounded border border-black"
+               value="{% if form.last_name.value %}{{ form.last_name.value }}{% endif %}">
+        {% if form.errors.last_name %}
+            <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.last_name }}</span>
+        {% endif %}
+    </div>
+</div>
+
+<h2 class="text-primary font-bold mt-6">Contact Info</h2>
+<div class="mt-6 text-sm grid grid-cols-[150px_1fr] items-center gap-x-8 gap-y-6">
+    <label for="username" class="font-medium">Email</label>
+    <div>
+        <input aria-label="email" type="email" name="email"
+               class="w-full p-1 rounded border border-black"
+               value="{% if form.email.value %}{{ form.email.value }}{% endif %}">
+        {% if form.errors.email %}
+            <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.username }}</span>
+        {% endif %}
+    </div>
+</div>
+
+<h2 class="text-primary font-bold mt-6">Login</h2>
+<div class="mt-6 text-sm grid grid-cols-[150px_1fr] items-center gap-x-8 gap-y-6">
+    <label for="password" class="font-medium">Password</label>
+    <div>
+        <input aria-label="password" type="password" name="password"
+               class="w-full p-1 rounded border border-black"
+               value="{% if form.password.value %}{{ form.password.value }}{% endif %}">
+        {% if form.errors.password %}
+            <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.password }}</span>
+        {% endif %}
+    </div>
+
+    <label for="confirm_password" class="font-medium">Confirm password</label>
+    <div>
+        <input aria-label="confirm_password" type="password" name="confirm_password"
+               class="w-full p-1 rounded border border-black"
+               value="{% if form.confirm_password.value %}{{ form.confirm_password.value }}{% endif %}">
+        {% if form.errors.confirm_password %}
+            <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.confirm_password }}</span>
+        {% endif %}
+    </div>

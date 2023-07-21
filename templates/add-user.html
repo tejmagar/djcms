@@ -1,0 +1,19 @@
+{% extends 'layouts/default.html' %}
+
+{% block title %}
+    <title>Profile - DJ CMS</title>
+{% endblock %}
+
+{% block content %}
+    <div class="p-2 md:p-8">
+        <h1 class="inline-block text-xl">Add User</h1>
+
+        <div class="mt-8 max-w-[600px]">
+            <form action="" method="POST">
+                {% include 'components/user-form.html' %}
+                <input type="submit" value="Add User"
+                       class="bg-[#135e96] text-white px-4 py-1.5 text-[13px] rounded">
+            </form>
+        </div>
+    </div>
+{% endblock %}

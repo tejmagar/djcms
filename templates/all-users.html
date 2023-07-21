@@ -1,6 +1,91 @@
 {% extends 'layouts/default.html' %}
 
+{% block title %}
+    <title>{{ title }} - DJ CMS</title>
+{% endblock %}
 
 {% block content %}
+    <div class="p-8">
+        <div>
+            <h1 class="inline-block text-xl">{{ title }}</h1>
+            <a href="{{ new_content_url }}"
+               class="inline-block border rounded border-blue-500 px-2 py-1 mx-2 text-[12px] text-blue-600 font-semibold">Add
+                New
+            </a>
+        </div>
 
+        <div class="text-[12px] mt-4">
+            <a href="{{ edit_content_select }}" class="text-blue-500">
+                All Users<span class="text-gray-500">({{ all_users_count }})</span>
+            </a>
+            <span class="mx-1 text-gray-500">|</span>
+
+            <a href="{{ edit_content_select }}?post_status=published" class="text-blue-500">
+                Administrator <span class="text-gray-500">({{ administrator_count }})</span>
+            </a>
+        </div>
+
+        <div class="bg-white rounded-lg mt-4">
+            <table class="w-full">
+                <thead class="border-b border-[#dfdfdf]">
+                <tr class="text-sm">
+                    <th class="font-normal text-blue-600 py-2 text-start px-4">Username</th>
+                    <th class="font-normal w-1/6 text-start px-4 hidden sm:table-cell">Name</th>
+                    <th class="font-normal text-blue-600 w-1/6 text-start px-4 hidden md:table-cell">Email</th>
+                    <th class="font-normal w-1/6 text-start px-4 hidden md:table-cell">Role</th>
+                    <th class="font-normal w-1/6 text-start px-4 hidden lg:table-cell">Posts</th>
+                    <th class="font-normal py-2 w-1/6 text-start px-4 hidden lg:table-cell">Joined</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in page_obj %}
+                    <tr class="group">
+                        <td class="px-4 align-top text-sm py-2">
+                            <a href="" class="block text-blue-500">
+                                {{ user.username }}
+                            </a>
+                            <div class="my-1 invisible group-hover:visible text-[12px] text-blue-500">
+                                <a href="{% if user.pk == request.user.pk %}{% url 'edit_profile' %}{% else %}{% url 'edit_user' user.pk %}{% endif %}">Edit</a>
+                                <span class="text-gray-500 mx-1">|</span>
+                                <a href="#">View</a>
+                            </div>
+                        </td>
+
+                        <td class="px-4 align-top text-sm w-1/6 py-2 hidden sm:table-cell">
+                            <span>
+                                {% if user.firstname %}
+                                    {{ user.firstname }} {{ user.lastname }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td class="px-4 align-top text-sm w-1/6 py-2 hidden md:table-cell">
+                            <a href="mailto:{{ user.email }}" class="text-blue-500">{{ user.email }}</a>
+                        </td>
+                        <td class="px-4 align-top text-sm w-1/6 py-2 hidden md:table-cell">
+                            {% if request.user.is_superuser %}
+                                Administrator
+                            {% elif user.role %}
+                                {{ user.role }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td class="px-4 align-top text-sm w-1/6 py-2 hidden lg:table-cell">
+                            0
+                        </td>
+                        <td class="px-4 align-top text-[13px] text-gray-700 w-1/6 py-2 hidden lg:table-cell">
+                            <span class="block">{{ user.date_joined|date:"Y/m/d" }}</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {% if not page_obj %}
+                <span class="block text-sm p-4">There is no any items</span>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

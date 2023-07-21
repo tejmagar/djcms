@@ -10,7 +10,7 @@ sidebar_menus = {
     'posts': ['edit_post_select', 'new_post', 'categories', 'tags'],
     'media': ['media'],
     'pages': ['edit_page_select', 'new_page'],
-    'users': ['all_users']
+    'users': ['all_users', 'edit_user', 'edit_profile', 'add_user']
 }
 
 
@@ -23,13 +23,13 @@ def should_expand_menu(context, menu_name) -> bool:
     For example: {% should_expand_menu 'pages' as expand_page %}
     """
 
-    current_url_name = context.request.resolver_match.url_name
+    reverse_url_name = context.request.resolver_match.url_name
 
     sub_menus = sidebar_menus.get(menu_name)
 
     if sub_menus:
         for sub_menu in sub_menus:
-            if sub_menu == current_url_name:
+            if sub_menu == reverse_url_name:
                 return True
 
     return False

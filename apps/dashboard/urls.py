@@ -13,7 +13,9 @@ from .views import (
     AddPageView,
     EditPageView,
     MediaView,
-    AllUsers
+    AllUsers,
+    AddUser,
+    EditUserView,
 )
 
 urlpatterns = [
@@ -39,6 +41,9 @@ urlpatterns = [
 
     # Users
     path('users/', AllUsers.as_view(), name='all_users'),
+    path('users/add/', AddUser.as_view(), name='add_user'),
+    path('users/edit/<int:pk>/', EditUserView.as_view(), name='edit_user'),
+    path('users/profile/', EditUserView.as_view(), name='edit_profile'),
 
     path('media/', MediaView.as_view(), name='media')
 ]
