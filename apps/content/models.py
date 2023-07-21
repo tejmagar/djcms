@@ -46,6 +46,7 @@ class Post(SeoMeta, StatusMixin):
 
 
 class Page(SeoMeta, StatusMixin):
+    created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=200)
     author = models.ForeignKey(to=get_user_model(), null=True, blank=True, on_delete=models.DO_NOTHING)
     slug = models.SlugField(blank=True, unique=True)

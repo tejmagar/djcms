@@ -9,7 +9,8 @@ sidebar_menus = {
     'dashboard': ['dashboard'],
     'posts': ['edit_post_select', 'new_post', 'categories', 'tags'],
     'media': ['media'],
-    'pages': ['edit_page_select', 'new_page']
+    'pages': ['edit_page_select', 'new_page'],
+    'users': ['all_users']
 }
 
 
@@ -32,3 +33,12 @@ def should_expand_menu(context, menu_name) -> bool:
                 return True
 
     return False
+
+
+@register.simple_tag(takes_context=True)
+def current_url_name(context) -> bool:
+    """
+    Check if the given reverse url name resolves the current path
+    """
+
+    return context.request.resolver_match.url_name

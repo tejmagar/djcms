@@ -712,16 +712,12 @@ html {
   min-width: 60px;
 }
 
-.max-w-full {
-  max-width: 100%;
-}
-
-.max-w-\[800px\] {
-  max-width: 800px;
-}
-
 .max-w-\[600px\] {
   max-width: 600px;
+}
+
+.max-w-full {
+  max-width: 100%;
 }
 
 .resize-none {
@@ -795,11 +791,6 @@ html {
 
 .rounded-xl {
   border-radius: 0.75rem;
-}
-
-.rounded-b-lg {
-  border-bottom-right-radius: 0.5rem;
-  border-bottom-left-radius: 0.5rem;
 }
 
 .border {
@@ -922,11 +913,6 @@ html {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.bg-red-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
-}
-
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
@@ -992,17 +978,8 @@ html {
   padding-bottom: 0.625rem;
 }
 
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
 .pt-4 {
   padding-top: 1rem;
-}
-
-.pb-1 {
-  padding-bottom: 0.25rem;
 }
 
 .text-center {
@@ -1046,6 +1023,10 @@ html {
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.font-bold {
+  font-weight: 700;
 }
 
 .font-medium {
@@ -1156,11 +1137,6 @@ html {
 .even\:bg-white:nth-child(even) {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.even\:bg-red-500:nth-child(even) {
-  --tw-bg-opacity: 1;
-  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
 
 .hover\:border-blue-500:hover {

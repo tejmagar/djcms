@@ -1,4 +1,5 @@
 {% load utils %}
+{% current_url_name as current_url_name %}
 
 <aside class="bg-[#1d2327] text-white h-full overflow-y-auto">
     <ul class="text-[13px] text-[#dddddd]">
@@ -10,7 +11,7 @@
             </a>
         </li>
 
-        <li>
+        <li data-expand="posts">
             {% should_expand_menu 'posts' as expand_post %}
 
             <a href="{% url 'edit_post_select' %}"
@@ -18,25 +19,29 @@
                 <i class="fa-solid fa-thumbtack fa-lg w-[28px]"></i>Posts
             </a>
 
-            {% if expand_post %}
-                <ul class="bg-[#2c3338] py-2">
-                    <li class="px-4 py-1 border-l-4 border-transparent hover:border-blue-500">
-                        <a href="{% url 'edit_post_select' %}" class="block">All Posts</a>
-                    </li>
-                    <li class="px-4 py-1 border-l-4 border-transparent  hover:border-blue-500">
-                        <a href="{% url 'new_post' %}" class="block">Add New</a>
-                    </li>
-                    <li class="px-4 py-1 border-l-4 border-transparent  hover:border-blue-500">
-                        <a href="{% url 'categories' %}" class="block">Categories</a>
-                    </li>
-                    <li class="px-4 py-1 border-l-4 border-transparent  hover:border-blue-500">
-                        <a href="{% url 'tags' %}" class="block">Tags</a>
-                    </li>
-                </ul>
-            {% endif %}
+            <ul class="bg-[#2c3338] py-2" {% if expand_post %}data-menu-selected="true"{% endif %} data-menu="posts">
+                <li>
+                    <a href="{% url 'edit_post_select' %}"
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'edit_post_select' %}font-semibold text-white{% endif %}">
+                        All Posts
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'new_post' %}"
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'new_post' %}font-semibold text-white{% endif %}">Add New</a>
+                </li>
+                <li>
+                    <a href="{% url 'categories' %}"
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'categories' %}font-semibold text-white{% endif %}">Categories</a>
+                </li>
+                <li>
+                    <a href="{% url 'tags' %}"
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'tags' %}font-semibold text-white{% endif %}">Tags</a>
+                </li>
+            </ul>
         </li>
 
-        <li class="my-1">
+        <li class="my-1" data-expand="media">
             {% should_expand_menu 'media' as expand_media %}
 
             <a href="{% url 'media' %}"
@@ -44,39 +49,58 @@
                 <i class="fa-solid fa-image fa-lg w-[28px]"></i>Media
             </a>
 
-            {% if expand_media %}
-                <ul class="bg-[#2c3338] py-2">
-                    <li class="px-4 py-1 border-l-4 border-transparent hover:border-blue-500">
-                        <a href="{% url 'media' %}" class="block">Library</a>
-                    </li>
-                </ul>
-            {% endif %}
+            <ul class="bg-[#2c3338] py-2" {% if expand_media %}data-menu-selected="true"{% endif %} data-menu="media">
+                <li>
+                    <a href="{% url 'media' %}"
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'media' %}font-semibold text-white{% endif %}">Library</a>
+                </li>
+            </ul>
         </li>
 
-        <li>
-            {% should_expand_menu 'pages' as expand_page %}
+        <li data-expand="pages">
+            {% should_expand_menu 'pages' as expand_pages %}
 
             <a href="{% url 'edit_page_select' %}"
-               class="px-4 py-2 border-l-4 border-transparent block text-[14px] {% if expand_page %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+               class="px-4 py-2 border-l-4 border-transparent block text-[14px] {% if expand_pages %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
                 <i class="fa-solid fa-file fa-lg w-[28px]"></i>Pages
             </a>
 
-            {% if expand_page %}
-                <ul class="bg-[#2c3338] py-2">
-                    <li class="px-4 py-1 border-l-4 border-transparent hover:border-blue-500">
-                        <a href="{% url 'edit_page_select' %}" class="block">All Pages</a>
-                    </li>
-                    <li class="px-4 py-1 border-l-4 border-transparent  hover:border-blue-500">
-                        <a href="{% url 'new_page' %}" class="block">Add New</a>
-                    </li>
-                </ul>
-            {% endif %}
+            <ul class="bg-[#2c3338] py-2" {% if expand_pages %}data-menu-selected="true"{% endif %} data-menu="pages">
+                <li>
+                    <a href="{% url 'edit_page_select' %}"
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'edit_page_select' %}font-semibold text-white{% endif %}">All Pages</a>
+                </li>
+                <li>
+                    <a href="{% url 'new_page' %}"
+                       class="block px-4 py-1 border-l-4 border-transparent  hover:border-blue-500 {% if current_url_name == 'new_page' %}font-semibold text-white{% endif %}">Add New</a>
+                </li>
+            </ul>
         </li>
 
-        <li>
-                <span class="px-4 py-2 my-1 border-l-4 border-transparent hover:border-blue-500 block text-[14px]">
-                    <i class="fa-solid fa-user fa-lg w-[28px]"></i>Users
-                </span>
+        <li class="my-1" data-expand="users">
+            {% should_expand_menu 'users' as expand_users %}
+
+            <a href="{% url 'all_users' %}"
+               class="px-4 py-2 border-l-4 border-transparent hover:border-blue-500 block text-[14px] {% if expand_users %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+                <i class="fa-solid fa-user fa-lg w-[28px]"></i>Users
+            </a>
+
+            <ul class="bg-[#2c3338] py-2" {% if expand_users %}data-menu-selected="true"{% endif %} data-menu="users">
+                <li>
+                    <a href="{% url 'all_users' %}"
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'all_users' %}font-semibold text-white{% endif %}">All Users</a>
+                </li>
+
+                <li>
+                    <a href=""
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500">Add New</a>
+                </li>
+
+                <li>
+                    <a href=""
+                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500">Profile</a>
+                </li>
+            </ul>
         </li>
 
         <li>
@@ -87,3 +111,44 @@
 
     </ul>
 </aside>
+
+
+<script>
+    function initializePopupMenu() {
+        const expandableTags = document.querySelectorAll('[data-expand]');
+
+        expandableTags.forEach(element => {
+            element.setAttribute('role', 'tooltip')
+            const menuName = element.getAttribute('data-expand');
+            const expandableMenu = document.querySelector(`[data-menu="${menuName}"]`)
+            const menuSelected = expandableMenu.getAttribute('data-menu-selected');
+            if (menuSelected && menuSelected === "true") {
+                return;
+            }
+
+            expandableMenu.style.display = 'none';
+            let popper = null;
+
+            element.addEventListener('mouseover', () => {
+                if (popper) {
+                    return;
+                }
+
+                expandableMenu.style.display = 'block';
+                popper = Popper.createPopper(element, expandableMenu, {
+                    placement: 'right',
+                });
+            });
+
+            element.addEventListener('mouseout', () => {
+                if (popper) {
+                    popper.destroy();
+                    popper = null;
+                }
+                expandableMenu.style.display = 'none';
+            });
+        })
+    }
+
+    initializePopupMenu()
+</script>

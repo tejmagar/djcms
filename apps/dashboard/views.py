@@ -12,7 +12,7 @@ from django.http import Http404
 from django.forms import ModelForm
 from django.http.request import HttpRequest
 
-from apps.content.models import Category, Post, Tag, Page, StatusMixin, SeoMeta
+from apps.content.models import Category, Post, Tag, Page, StatusMixin
 from apps.content.utils.status import StatusAction
 from apps.content.utils.contents import ContentQuery
 
@@ -412,5 +412,10 @@ class EditTagView(AbstractEditGroupView):
 
 
 class MediaView(View):
-    def get(self, request):
+    def get(self, request: HttpRequest) -> HttpResponse:
         return render(request, 'media.html')
+
+
+class AllUsers(SuperuserPermissionMixin, View):
+    def get(self, request: HttpRequest) -> HttpResponse:
+        return render(request, 'all-users.html')

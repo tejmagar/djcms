@@ -35,80 +35,86 @@
             </a>
         </div>
 
-        <table class="w-full bg-white rounded-lg mt-4">
-            <thead class="border-b border-[#dfdfdf]">
-            <tr class="text-sm">
-                <th class="font-normal text-blue-600 py-2 text-start px-4">Title</th>
-                <th class="font-normal w-1/6 text-start px-4 hidden sm:table-cell">Author</th>
-                <th class="font-normal w-1/6 text-start px-4 hidden md:table-cell">Categories</th>
-                <th class="font-normal w-1/6 text-start px-4 hidden md:table-cell">Tags</th>
-                <th class="font-normal w-1/6 text-start px-4 hidden lg:table-cell">Comments</th>
-                <th class="font-normal text-blue-600 py-2 w-1/6 text-start px-4 hidden lg:table-cell">Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for post in page_obj %}
-                <tr class="group">
-                    <td class="px-4 align-top text-sm py-2">
-                        <a href="{% url reverse_content_edit_name post.pk %}" class="block text-blue-500">
-                            {{ post.title }} {% if post.is_draft %} — Draft{% endif %}
-                        </a>
-                        <div class="my-1 invisible group-hover:visible text-[12px] text-blue-500">
-                            {% if request.GET.post_status == 'trash' %}
-                                <!-- Restore form -->
-                                <form class="inline" action="{% url reverse_content_edit_name post.pk %}?action=restore"
-                                      method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit" href="#" class="text-red-500">Restore</button>
-                                </form>
-                                <!-- End restore form -->
+        <div class="bg-white rounded-lg mt-4">
+            <table class="w-full">
+                <thead class="border-b border-[#dfdfdf]">
+                <tr class="text-sm">
+                    <th class="font-normal text-blue-600 py-2 text-start px-4">Title</th>
+                    <th class="font-normal w-1/6 text-start px-4 hidden sm:table-cell">Author</th>
+                    <th class="font-normal w-1/6 text-start px-4 hidden md:table-cell">Categories</th>
+                    <th class="font-normal w-1/6 text-start px-4 hidden md:table-cell">Tags</th>
+                    <th class="font-normal w-1/6 text-start px-4 hidden lg:table-cell">Comments</th>
+                    <th class="font-normal text-blue-600 py-2 w-1/6 text-start px-4 hidden lg:table-cell">Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for post in page_obj %}
+                    <tr class="group">
+                        <td class="px-4 align-top text-sm py-2">
+                            <a href="{% url reverse_content_edit_name post.pk %}" class="block text-blue-500">
+                                {{ post.title }} {% if post.is_draft %} — Draft{% endif %}
+                            </a>
+                            <div class="my-1 invisible group-hover:visible text-[12px] text-blue-500">
+                                {% if request.GET.post_status == 'trash' %}
+                                    <!--  form -->
+                                    <form class="inline"
+                                          action="{% url reverse_content_edit_name post.pk %}?action=restore"
+                                          method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" href="#" class="text-red-500">Restore</button>
+                                    </form>
+                                    <!-- End restore form -->
 
-                                <span class="text-gray-500 mx-1">|</span>
+                                    <span class="text-gray-500 mx-1">|</span>
 
-                                <!-- Delete permanent form -->
-                                <form class="inline" action="{% url reverse_content_edit_name post.pk %}?action=delete" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit" href="#" class="text-red-500">Delete Permanently</button>
-                                </form>
-                                <!-- End delete permanent form -->
+                                    <!-- Delete permanent form -->
+                                    <form class="inline"
+                                          action="{% url reverse_content_edit_name post.pk %}?action=delete"
+                                          method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" href="#" class="text-red-500">Delete Permanently</button>
+                                    </form>
+                                    <!-- End delete permanent form -->
 
-                            {% else %}
-                                <a href="{% url reverse_content_edit_name post.pk %}">Edit</a>
-                                <span class="text-gray-500 mx-1">|</span>
+                                {% else %}
+                                    <a href="{% url reverse_content_edit_name post.pk %}">Edit</a>
+                                    <span class="text-gray-500 mx-1">|</span>
 
-                                <!-- Trash form -->
-                                <form class="inline" action="{% url reverse_content_edit_name post.pk %}?action=trash" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit" href="#" class="text-red-500">Trash</button>
-                                </form>
-                                <!-- End trash form -->
+                                    <!-- Trash form -->
+                                    <form class="inline"
+                                          action="{% url reverse_content_edit_name post.pk %}?action=trash"
+                                          method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" href="#" class="text-red-500">Trash</button>
+                                    </form>
+                                    <!-- End trash form -->
 
-                                <span class="text-gray-500 mx-1">|</span>
+                                    <span class="text-gray-500 mx-1">|</span>
 
-                                <a href="#">View</a>
-                            {% endif %}
-                        </div>
-                    </td>
+                                    <a href="#">View</a>
+                                {% endif %}
+                            </div>
+                        </td>
 
-                    <td class="px-4 align-top text-sm w-1/6 py-2 hidden sm:table-cell">
-                        <a href="#" class="text-blue-500">
-                            {% if post.author %}
-                                {{ post.author }}
-                            {% else %}
-                                —
-                            {% endif %}
-                        </a>
-                    </td>
-                    <td class="px-4 align-top text-sm w-1/6 py-2 hidden md:table-cell">
-                        <a href="#" class="text-blue-500">Uncategorized</a>
-                    </td>
-                    <td class="px-4 align-top text-sm w-1/6 py-2 hidden md:table-cell">
-                        —
-                    </td>
-                    <td class="px-4 align-top text-sm w-1/6 py-2 hidden lg:table-cell">
-                        —
-                    </td>
-                    <td class="px-4 align-top text-[13px] text-gray-700 w-1/6 py-2 hidden lg:table-cell">
+                        <td class="px-4 align-top text-sm w-1/6 py-2 hidden sm:table-cell">
+                            <a href="#" class="text-blue-500">
+                                {% if post.author %}
+                                    {{ post.author }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </a>
+                        </td>
+                        <td class="px-4 align-top text-sm w-1/6 py-2 hidden md:table-cell">
+                            <a href="#" class="text-blue-500">Uncategorized</a>
+                        </td>
+                        <td class="px-4 align-top text-sm w-1/6 py-2 hidden md:table-cell">
+                            —
+                        </td>
+                        <td class="px-4 align-top text-sm w-1/6 py-2 hidden lg:table-cell">
+                            —
+                        </td>
+                        <td class="px-4 align-top text-[13px] text-gray-700 w-1/6 py-2 hidden lg:table-cell">
                         <span class="block">
                             {% if post.is_draft %}
                                 Last Modified
@@ -116,11 +122,16 @@
                                 Published
                             {% endif %}
                         </span>
-                        <span class="block">{{ post.created_at|date:"Y/m/d" }} at {{ post.created_at|date:"h:m a" }}</span>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                            <span class="block">{{ post.created_at|date:"Y/m/d" }} at {{ post.created_at|date:"h:m a" }}</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {% if not page_obj %}
+                <span class="block text-sm p-4">There is no any items</span>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

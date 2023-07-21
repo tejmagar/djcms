@@ -13,6 +13,7 @@ from .views import (
     AddPageView,
     EditPageView,
     MediaView,
+    AllUsers
 )
 
 urlpatterns = [
@@ -35,6 +36,9 @@ urlpatterns = [
     path('page/edit/', AbstractAllPagesView.as_view(), name='edit_page_select'),
     path('page/new/', AddPageView.as_view(), name='new_page'),
     path('page/edit/<int:pk>/', EditPageView.as_view(), name='edit_page'),
+
+    # Users
+    path('users/', AllUsers.as_view(), name='all_users'),
 
     path('media/', MediaView.as_view(), name='media')
 ]
