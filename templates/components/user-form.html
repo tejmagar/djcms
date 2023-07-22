@@ -14,7 +14,11 @@
 
     <label for="role" class="font-medium">Role</label>
     <div>
-        {{ form.role }}
+        <select name="role" id="role" class="rounded border border-black px-2 py-1 bg-transparent">
+            {% for key, role in roles %}
+                <option value="{{ key }}" {% if form.role.value == key %}selected{% endif %}>{{ role }}</option>
+            {% endfor %}
+        </select>
     </div>
 
     <label for="first_name" class="font-medium">First Name</label>

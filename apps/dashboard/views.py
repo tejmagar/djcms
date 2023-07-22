@@ -442,7 +442,8 @@ class AddUser(SuperuserPermissionMixin, View):
     def get(self, request: HttpRequest) -> HttpResponse:
         form: ModelForm = AddUserForm()
         return render(request, 'add-user.html', {
-            'form': form
+            'form': form,
+            'roles': get_user_model().Roles.choices
         })
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -455,7 +456,8 @@ class AddUser(SuperuserPermissionMixin, View):
             return redirect(reverse('all_users'))
 
         return render(request, 'add-user.html', {
-            'form': form
+            'form': form,
+            'roles': get_user_model().Roles.choices
         })
 
 
@@ -469,7 +471,8 @@ class EditUserView(SuperuserPermissionMixin, View):
 
         form: ModelForm = UserForm(instance=instance)
         return render(request, 'edit-user.html', {
-            'form': form
+            'form': form,
+            'roles': get_user_model().Roles.choices
         })
 
     def post(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
@@ -486,13 +489,15 @@ class EditUserView(SuperuserPermissionMixin, View):
             password = form.cleaned_data.get('password')
             if password:
                 model.set_password(password)
-                model.save()
 
                 # User is logout so login user
                 login(request, model)
 
+            model.save()
             return redirect(reverse('edit_user', kwargs={'pk': pk}) if pk else reverse('edit_profile'))
 
+        print(form.errors)
         return render(request, 'edit-user.html', {
-            'form': form
+            'form': form,
+            'roles': get_user_model().Roles.choices
         })

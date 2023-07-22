@@ -14,11 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.conf import settings
 from django.urls import include, path
 
-# Allow DJ CMS to work with base url
-# By default BASE_URL is to None
+from djcms.settings.base import BASE_URL
+
 urlpatterns = [
-    path(settings.BASE_URL if settings.BASE_URL else '', include('apps.main.urls'), name='main')
+    path(BASE_URL if BASE_URL else '', include('apps.main.urls'), name='main')
 ]
+
+

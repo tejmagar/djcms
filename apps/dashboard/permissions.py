@@ -7,10 +7,11 @@ For example: Editor can do anything that author can do.
 """
 
 from abc import ABC, abstractmethod
+from typing import Union
 
 from django.contrib.auth.mixins import AccessMixin
 from django.contrib.auth import get_user_model
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect, HttpResponse
 
 
 class ViewPermissionMixin(ABC, AccessMixin):
@@ -31,9 +32,9 @@ class ViewPermissionMixin(ABC, AccessMixin):
 
         return self.has_user_permission(request)
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs) -> Union[HttpResponseRedirect, HttpResponse]:
         if not self._has_permission(request):
-            return self.handle_no_permission()
+            return HttpResponseRedirect(self.get_login_url())
 
         return super().dispatch(request, *args, **kwargs)
 

@@ -37,15 +37,10 @@ class PageForm(forms.ModelForm):
 
 class UserForm(forms.ModelForm):
     is_add_user = False
-    role = forms.ModelChoiceField(queryset=get_user_model().objects.get_queryset(),
-                                  widget=forms.Select(attrs={
-                                      'class': 'rounded border border-black px-2 py-1 bg-transparent'
-                                  }),
-                                  required=False)
+    role = forms.ChoiceField(required=False, choices=get_user_model().Roles.choices)
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     email = forms.CharField(required=True)
-
     password = forms.CharField(required=is_add_user)
     confirm_password = forms.CharField(required=is_add_user)
 

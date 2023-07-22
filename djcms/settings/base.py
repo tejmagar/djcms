@@ -9,8 +9,8 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+
 import os
-from distutils.util import strtobool
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -107,9 +107,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+# Pick BASE_URL from environment variable
+BASE_URL = os.environ.get('BASE_URL', '')
+print(BASE_URL)
 
-MEDIA_URL = 'media/'
+STATIC_URL = f'{BASE_URL}static/'
+
+MEDIA_URL = f'{BASE_URL}media/'
 
 STATIC_ROOT = BASE_DIR / 'static'
 
@@ -122,4 +126,3 @@ STATICFILES_DIRS = ['public/']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-BASE_URL = None
