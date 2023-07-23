@@ -7,8 +7,8 @@
 {% block content %}
     <div class="p-8">
         <div>
-            <h1 class="inline-block text-xl">{{ title }}</h1>
-            <a href="{{ new_content_url }}"
+            <h1 class="inline-block text-xl">Users</h1>
+            <a href="{% url 'add_user' %}"
                class="inline-block border rounded border-blue-500 px-2 py-1 mx-2 text-[12px] text-blue-600 font-semibold">Add
                 New
             </a>
@@ -16,7 +16,7 @@
 
         <div class="text-[12px] mt-4">
             <a href="{{ edit_content_select }}" class="text-blue-500">
-                All Users<span class="text-gray-500">({{ all_users_count }})</span>
+                All Users <span class="text-gray-500">({{ all_users_count }})</span>
             </a>
             <span class="mx-1 text-gray-500">|</span>
 
@@ -46,6 +46,7 @@
                             </a>
                             <div class="my-1 invisible group-hover:visible text-[12px] text-blue-500">
                                 <a href="
+
 
                                         {% if user.pk == request.user.pk %}{% url 'edit_profile' %}{% else %}{% url 'edit_user' user.pk %}{% endif %}">Edit</a>
                                 <span class="text-gray-500 mx-1">|</span>

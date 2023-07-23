@@ -1,6 +1,6 @@
+from typing import Type, Any, Union
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, asdict
-from typing import Type, Any, Union
 
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.http import HttpResponse
@@ -16,6 +16,7 @@ from django.contrib.auth import get_user_model, login
 from apps.content.models import Category, Post, Tag, Page, StatusMixin
 from apps.content.utils.status import StatusAction
 from apps.content.utils.contents import ContentQuery
+from apps.content.utils.order import order_queryset
 
 from .forms import CategoryForm, PostForm, TagForm, PageForm, UserForm, AddUserForm, UserProfileForm
 from .permissions import (
@@ -76,7 +77,7 @@ class AbstractAllContentView(AuthorMixin, ListView, ABC):
             raise Http404()
 
         # Order is required for proper pagination
-        return queryset.order_by('-pk')
+        return order_queryset(self.request, Post, queryset)
 
     @abstractmethod
     def content_context(self) -> AllContentViewContext:
@@ -295,7 +296,7 @@ class AbstractGroupView(AuthorMixin, View):
         if not self.model_class:
             return None
 
-        return self.model_class.objects.order_by(order_by).all()
+        return order_queryset(self.request, self.model_class, self.model_class.objects.all())
 
     def get(self, request):
         self.validate()
@@ -361,6 +362,9 @@ class AbstractEditGroupView(AuthorMixin, View):
         if not self.edit_category_url_name:
             raise Exception('Please provide a reverse url name to edit the instance')
 
+    def get_items(self) -> QuerySet:
+        return order_queryset(self.request, self.model_class, self.model_class.objects.all())
+
     def get(self, request, **kwargs) -> HttpResponse:
         self.validate()
 
@@ -370,7 +374,7 @@ class AbstractEditGroupView(AuthorMixin, View):
 
         return render(request, self.template_name, {
             'form': form,
-            'items': self.model_class.objects.all()
+            'items': self.get_items()
         })
 
     def post(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
@@ -393,7 +397,7 @@ class AbstractEditGroupView(AuthorMixin, View):
 
         return render(request, self.template_name, {
             'form': form,
-            'items': self.model_class.objects.all()
+            'items': self.get_items()
         })
 
 
@@ -422,8 +426,10 @@ class MediaView(AuthorMixin, View):
 class AllUsers(SuperuserPermissionMixin, ListView):
     title: str = 'Users'
     template_name = 'all-users.html'
-    queryset = get_user_model().objects.order_by('pk')
     paginate_by = 50
+
+    def get_queryset(self) -> QuerySet:
+        return order_queryset(self.request, get_user_model(), get_user_model().objects.all())
 
     def get_extra_context(self) -> dict:
         return {
@@ -513,7 +519,6 @@ class AbstractEditUserView(AuthorMixin, View, ABC):
             model.save()
             return redirect(reverse('edit_user', kwargs={'pk': pk}) if pk else reverse('edit_profile'))
 
-        print(form.errors)
         return render(request, 'edit-user.html', {
             'form': form,
             'roles': get_user_model().Roles.choices
