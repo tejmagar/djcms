@@ -21,6 +21,7 @@ class ViewPermissionMixin(ABC, AccessMixin):
 
     # Pass if you want a different url rather than current url user trying to access
     login_success_url: Union[str, None] = None
+    _current_path: Union[str, None] = None
 
     @abstractmethod
     def has_user_permission(self, request: HttpRequest) -> bool:
@@ -43,18 +44,21 @@ class ViewPermissionMixin(ABC, AccessMixin):
 
         return request.user.is_authenticated and self.has_user_permission(request)
 
+    def get_login_url(self) -> str:
+        login_url = super().get_login_url()
+
+        if self.login_success_url:
+            return f'{login_url}?next={self.login_success_url}'
+
+        # Tell LoginView to redirect the same page after login successful
+        return f'{login_url}?next={self._current_path}'
+
     def dispatch(self, request, *args, **kwargs) -> Union[HttpResponseRedirect, HttpResponse]:
+        # Allow get_login_url() method to access current path
+        self._current_path = request.path
+
         if not self.has_permission(request):
-            prepare_login_url = self.get_login_url()
-
-            # Construct redirect urls
-            if self.login_success_url:
-                prepare_login_url += f'?next={self.login_success_url}'
-            else:
-                # Tell LoginView to redirect the same page after login successful
-                prepare_login_url += f'?next={request.path}'
-
-            return HttpResponseRedirect(prepare_login_url)
+            return HttpResponseRedirect(self.get_login_url())
 
         return super().dispatch(request, *args, **kwargs)
 
