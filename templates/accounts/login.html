@@ -1,0 +1,37 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login - DJ CMS</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+<div class="h-screen grid justify-center items-center">
+    {% with request.user.login_with as login_with %}
+        <form method="POST" class="w-[400px] max-w-full text-sm flex flex-col gap-y-4 p-8 bg-white rounded-2xl">
+            {% csrf_token %}
+            <div>
+                <label for="{{ login_with }}">{{ login_with|title }}</label>
+                <input name="login_with" id="{{ login_with }}"
+                       type="{% if login_with == 'email' %}{{ login_with }}{% else %}text{% endif %}"
+                       class="mt-1 w-full px-2 py-2 rounded border-2 border-gray-600">
+                {% if form.errors.login_with %}
+                    <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.login_with }}</span>
+                {% endif %}
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input name="password" type="password" id="password"
+                       class="mt-1 w-full px-2 py-2 rounded border-2 border-gray-600">
+                {% if form.errors.password %}
+                    <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.password }}</span>
+                {% endif %}
+            </div>
+
+            <input type="submit" value="Login" class="bg-[#135e96] px-4 py-2 rounded text-white">
+        </form>
+    {% endwith %}
+</div>
+</body>
+</html>

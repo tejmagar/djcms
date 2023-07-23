@@ -31,7 +31,7 @@ class ContentQuery:
         if self.user.is_superuser:
             return self.model_class.objects.filter(is_trash=False, is_draft=False)
 
-        return self.user.objects.filter(author=self.user, is_trash=False, is_draft=False)
+        return self.model_class.objects.filter(author=self.user, is_trash=False, is_draft=False)
 
     def get_draft(self) -> QuerySet:
         """

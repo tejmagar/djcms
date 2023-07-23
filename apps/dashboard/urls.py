@@ -6,16 +6,17 @@ from .views import (
     AllPostsView,
     EditPostView,
     CategoriesView,
-    EditGroupView,
+    EditCategoryView,
     TagsView,
     EditTagView,
-    AbstractAllPagesView,
+    AllPagesView,
     AddPageView,
     EditPageView,
     MediaView,
     AllUsers,
     AddUser,
     EditUserView,
+    UserProfileView
 )
 
 urlpatterns = [
@@ -28,14 +29,14 @@ urlpatterns = [
 
     # Categories and tags
     path('categories/', CategoriesView.as_view(), name='categories'),
-    path('categories/edit/<int:pk>/', EditGroupView.as_view(), name='edit_category'),
+    path('categories/edit/<int:pk>/', EditCategoryView.as_view(), name='edit_category'),
 
     # Tags
     path('tags/', TagsView.as_view(), name='tags'),
     path('tags/edit/<int:pk>/', EditTagView.as_view(), name='edit_tag'),
 
     # Pages
-    path('page/edit/', AbstractAllPagesView.as_view(), name='edit_page_select'),
+    path('page/edit/', AllPagesView.as_view(), name='edit_page_select'),
     path('page/new/', AddPageView.as_view(), name='new_page'),
     path('page/edit/<int:pk>/', EditPageView.as_view(), name='edit_page'),
 
@@ -43,7 +44,7 @@ urlpatterns = [
     path('users/', AllUsers.as_view(), name='all_users'),
     path('users/add/', AddUser.as_view(), name='add_user'),
     path('users/edit/<int:pk>/', EditUserView.as_view(), name='edit_user'),
-    path('users/profile/', EditUserView.as_view(), name='edit_profile'),
+    path('users/profile/', UserProfileView.as_view(), name='edit_profile'),
 
     path('media/', MediaView.as_view(), name='media')
 ]

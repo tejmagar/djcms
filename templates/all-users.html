@@ -45,7 +45,17 @@
                                 {{ user.username }}
                             </a>
                             <div class="my-1 invisible group-hover:visible text-[12px] text-blue-500">
-                                <a href="{% if user.pk == request.user.pk %}{% url 'edit_profile' %}{% else %}{% url 'edit_user' user.pk %}{% endif %}">Edit</a>
+                                <a href="
+
+                                        {% if user.pk == request.user.pk %}{% url 'edit_profile' %}{% else %}{% url 'edit_user' user.pk %}{% endif %}">Edit</a>
+                                <span class="text-gray-500 mx-1">|</span>
+
+
+                                <form action="{% url 'edit_user' user.pk %}" method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <input type="submit" name="delete" value="Delete" class="text-red-500">
+                                </form>
+
                                 <span class="text-gray-500 mx-1">|</span>
                                 <a href="#">View</a>
                             </div>
@@ -64,9 +74,7 @@
                             <a href="mailto:{{ user.email }}" class="text-blue-500">{{ user.email }}</a>
                         </td>
                         <td class="px-4 align-top text-sm w-1/6 py-2 hidden md:table-cell">
-                            {% if request.user.is_superuser %}
-                                Administrator
-                            {% elif user.role %}
+                            {% if user.role %}
                                 {{ user.role }}
                             {% else %}
                                 —

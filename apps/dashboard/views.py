@@ -17,7 +17,7 @@ from apps.content.models import Category, Post, Tag, Page, StatusMixin
 from apps.content.utils.status import StatusAction
 from apps.content.utils.contents import ContentQuery
 
-from .forms import CategoryForm, PostForm, TagForm, PageForm, UserForm, AddUserForm
+from .forms import CategoryForm, PostForm, TagForm, PageForm, UserForm, AddUserForm, UserProfileForm
 from .permissions import (
     SuperuserPermissionMixin,
     AuthorMixin
@@ -38,7 +38,7 @@ class AllContentViewContext:
 
 # Create your views here.
 
-class DashboardView(SuperuserPermissionMixin, View):
+class DashboardView(AuthorMixin, View):
     """
     Only allow superuser to view dashboard page
     """
@@ -118,7 +118,7 @@ class AllPostsView(AbstractAllContentView):
         )
 
 
-class AbstractAllPagesView(AbstractAllContentView):
+class AllPagesView(AbstractAllContentView):
     """
     List all pages based on status.
     Listing logic is handled by AllContentView
@@ -143,6 +143,7 @@ class AbstractAddView(AuthorMixin, View, ABC):
 
     # For adding new post, we reuse the same 'edit-post.html'. So we pass the 'update_mode': False to context.
     # This helps the template to know we are adding new post.
+
     template_name: str = 'edit-post.html'
     title: str = 'Add'
     form: Type[ModelForm] = None
@@ -326,6 +327,13 @@ class CategoriesView(AbstractGroupView):
     model_class = Category
 
 
+class TagsView(AbstractGroupView):
+    template_name = 'tags.html'
+    form_class = TagForm
+    form_success_redirect_url = reverse_lazy('tags')
+    model_class = Tag
+
+
 class AbstractEditGroupView(AuthorMixin, View):
     """
     Reusable class for Categories and Tags View
@@ -389,19 +397,12 @@ class AbstractEditGroupView(AuthorMixin, View):
         })
 
 
-class EditGroupView(AbstractEditGroupView):
+class EditCategoryView(AbstractEditGroupView):
     model_class = Category
     template_name = 'edit-category.html'
     form_class = CategoryForm
     redirect_delete_url = reverse_lazy('categories')
     edit_category_url_name = 'edit_category'
-
-
-class TagsView(AbstractGroupView):
-    template_name = 'tags.html'
-    form_class = TagForm
-    form_success_redirect_url = reverse_lazy('tags')
-    model_class = Tag
 
 
 class EditTagView(AbstractEditGroupView):
@@ -412,7 +413,8 @@ class EditTagView(AbstractEditGroupView):
     edit_category_url_name = 'edit_tag'
 
 
-class MediaView(View):
+class MediaView(AuthorMixin, View):
+
     def get(self, request: HttpRequest) -> HttpResponse:
         return render(request, 'media.html')
 
@@ -420,7 +422,7 @@ class MediaView(View):
 class AllUsers(SuperuserPermissionMixin, ListView):
     title: str = 'Users'
     template_name = 'all-users.html'
-    queryset = get_user_model().objects.get_queryset()
+    queryset = get_user_model().objects.order_by('pk')
     paginate_by = 50
 
     def get_extra_context(self) -> dict:
@@ -461,15 +463,23 @@ class AddUser(SuperuserPermissionMixin, View):
         })
 
 
-class EditUserView(SuperuserPermissionMixin, View):
+class AbstractEditUserView(AuthorMixin, View, ABC):
+    form_class = None
+
+    def check_form_instance(self):
+        if not self.form_class:
+            raise Exception('Please provide form class')
+
     def get(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
+        self.check_form_instance()
+
         pk: int = kwargs.get('pk')
         if pk:
             instance: get_user_model() = get_object_or_404(get_user_model(), pk=pk)
         else:
             instance = request.user
 
-        form: ModelForm = UserForm(instance=instance)
+        form: ModelForm = self.form_class(instance=instance)
         return render(request, 'edit-user.html', {
             'form': form,
             'roles': get_user_model().Roles.choices
@@ -482,7 +492,14 @@ class EditUserView(SuperuserPermissionMixin, View):
         else:
             instance = request.user
 
-        form: ModelForm = UserForm(instance=instance, data=request.POST)
+        action_delete: str = request.POST.get('delete')
+
+        # Check if superuser is trying to delete the user
+        if action_delete and request.user.is_superuser:
+            instance.delete()
+            return redirect(reverse('all_users'))
+
+        form: ModelForm = self.form_class(instance=instance, data=request.POST)
         if form.is_valid():
             model: get_user_model() = form.save(commit=False)
 
@@ -501,3 +518,11 @@ class EditUserView(SuperuserPermissionMixin, View):
             'form': form,
             'roles': get_user_model().Roles.choices
         })
+
+
+class EditUserView(AbstractEditUserView):
+    form_class = UserForm
+
+
+class UserProfileView(AbstractEditUserView):
+    form_class = UserProfileForm

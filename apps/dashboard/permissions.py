@@ -19,22 +19,42 @@ class ViewPermissionMixin(ABC, AccessMixin):
     Override allow_superuser if you don't want superuser to access the page
     """
 
+    # Pass if you want a different url rather than current url user trying to access
+    login_success_url: Union[str, None] = None
+
     @abstractmethod
     def has_user_permission(self, request: HttpRequest) -> bool:
+        """
+        This function is called only if the user is authenticated
+        """
+
         pass
 
     def allow_superuser(self) -> bool:
         return True
 
-    def _has_permission(self, request: HttpRequest) -> bool:
+    def has_permission(self, request: HttpRequest) -> bool:
+        """
+        This function will return True if the user is superuser. If you don't want that, use has_user_permission()
+        """
+
         if self.allow_superuser() and request.user.is_superuser:
             return True
 
-        return self.has_user_permission(request)
+        return request.user.is_authenticated and self.has_user_permission(request)
 
     def dispatch(self, request, *args, **kwargs) -> Union[HttpResponseRedirect, HttpResponse]:
-        if not self._has_permission(request):
-            return HttpResponseRedirect(self.get_login_url())
+        if not self.has_permission(request):
+            prepare_login_url = self.get_login_url()
+
+            # Construct redirect urls
+            if self.login_success_url:
+                prepare_login_url += f'?next={self.login_success_url}'
+            else:
+                # Tell LoginView to redirect the same page after login successful
+                prepare_login_url += f'?next={request.path}'
+
+            return HttpResponseRedirect(prepare_login_url)
 
         return super().dispatch(request, *args, **kwargs)
 

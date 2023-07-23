@@ -1,3 +1,5 @@
+from abc import ABC
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.forms import ValidationError
@@ -35,7 +37,7 @@ class PageForm(forms.ModelForm):
         fields = ('title', 'content', 'meta_description', 'slug', 'is_draft')
 
 
-class UserForm(forms.ModelForm):
+class AbstractUserForm(forms.ModelForm):
     is_add_user = False
     role = forms.ChoiceField(required=False, choices=get_user_model().Roles.choices)
     first_name = forms.CharField(required=True)
@@ -65,8 +67,24 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'role', 'first_name', 'last_name', 'email')
+        fields = ('username', 'first_name', 'last_name', 'role', 'email')
 
 
-class AddUserForm(UserForm):
+class UserForm(AbstractUserForm):
+    pass
+
+
+class AddUserForm(AbstractUserForm):
     is_add_user = True
+
+    class Meta:
+        model = get_user_model()
+        fields = ('username', 'first_name', 'last_name', 'role', 'email')
+
+
+class UserProfileForm(AbstractUserForm):
+    role = None
+
+    class Meta:
+        model = get_user_model()
+        fields = ('username', 'first_name', 'last_name', 'email')

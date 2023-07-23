@@ -1,6 +1,14 @@
-from typing import List
+from typing import Type
 
 from django import template
+from django.http import HttpRequest
+
+from ..permissions import (
+    ViewPermissionMixin,
+    AuthorMixin,
+    EditorMixin,
+    SuperuserPermissionMixin,
+)
 
 register = template.Library()
 
@@ -12,6 +20,28 @@ sidebar_menus = {
     'pages': ['edit_page_select', 'new_page'],
     'users': ['all_users', 'edit_user', 'edit_profile', 'add_user']
 }
+
+sidebar_permissions: dict[str, Type[ViewPermissionMixin]] = {
+    'dashboard': AuthorMixin,
+    'posts': AuthorMixin,
+    'media': AuthorMixin,
+    'pages': EditorMixin,
+    'users': AuthorMixin,
+    'settings': SuperuserPermissionMixin
+}
+
+
+@register.simple_tag(takes_context=True)
+def has_permission(context, menu_name: str) -> bool:
+    request: HttpRequest = context.request
+
+    mixin_class = sidebar_permissions.get(menu_name)
+    if mixin_class:
+        mixin = mixin_class()
+        return mixin.has_permission(request)
+
+    # None of the sidebar matched
+    return False
 
 
 @register.simple_tag(takes_context=True)

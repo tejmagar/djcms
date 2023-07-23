@@ -3,116 +3,145 @@
 
 <aside class="bg-[#1d2327] text-white h-full overflow-y-auto">
     <ul class="text-[13px] text-[#dddddd]">
-        <li class="my-1">
-            {% should_expand_menu 'dashboard' as expand_dashboard %}
-            <a href="{% url 'dashboard' %}"
-               class="px-4 py-2 border-l-4 border-transparent block text-[14px] {% if expand_dashboard %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
-                <i class="fa-solid fa-gauge-high fa-lg w-[28px]"></i>Dashboard
-            </a>
-        </li>
+        {% has_permission 'dashboard' as show_dashboard %}
 
-        <li data-expand="posts">
-            {% should_expand_menu 'posts' as expand_post %}
+        {% if show_dashboard %}
+            <li class="my-1">
+                {% should_expand_menu 'dashboard' as expand_dashboard %}
+                <a href="{% url 'dashboard' %}"
+                   class="px-4 py-2 border-l-4 border-transparent block text-[14px] {% if expand_dashboard %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+                    <i class="fa-solid fa-gauge-high fa-lg w-[28px]"></i>Dashboard
+                </a>
+            </li>
+        {% endif %}
 
-            <a href="{% url 'edit_post_select' %}"
-               class="px-4 py-2 border-l-4 border-transparent block text-[14px] {% if expand_post %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
-                <i class="fa-solid fa-thumbtack fa-lg w-[28px]"></i>Posts
-            </a>
+        {% has_permission 'posts' as show_posts %}
 
-            <ul class="bg-[#2c3338] py-2" {% if expand_post %}data-menu-selected="true"{% endif %} data-menu="posts">
-                <li>
-                    <a href="{% url 'edit_post_select' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'edit_post_select' %}font-semibold text-white{% endif %}">
-                        All Posts
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'new_post' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'new_post' %}font-semibold text-white{% endif %}">Add
-                        New</a>
-                </li>
-                <li>
-                    <a href="{% url 'categories' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'categories' %}font-semibold text-white{% endif %}">Categories</a>
-                </li>
-                <li>
-                    <a href="{% url 'tags' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'tags' %}font-semibold text-white{% endif %}">Tags</a>
-                </li>
-            </ul>
-        </li>
+        {% if show_posts %}
+            <li data-expand="posts">
+                {% should_expand_menu 'posts' as expand_post %}
 
-        <li class="my-1" data-expand="media">
-            {% should_expand_menu 'media' as expand_media %}
+                <a href="{% url 'edit_post_select' %}"
+                   class="px-4 py-2 border-l-4 border-transparent block text-[14px] {% if expand_post %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+                    <i class="fa-solid fa-thumbtack fa-lg w-[28px]"></i>Posts
+                </a>
 
-            <a href="{% url 'media' %}"
-               class="px-4 py-2 border-l-4 border-transparent hover:border-blue-500 block text-[14px] {% if expand_media %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
-                <i class="fa-solid fa-image fa-lg w-[28px]"></i>Media
-            </a>
+                <ul class="bg-[#2c3338] py-2" {% if expand_post %}data-menu-selected="true"{% endif %}
+                    data-menu="posts">
+                    <li>
+                        <a href="{% url 'edit_post_select' %}"
+                           class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'edit_post_select' %}font-semibold text-white{% endif %}">
+                            All Posts
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'new_post' %}"
+                           class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'new_post' %}font-semibold text-white{% endif %}">Add
+                            New</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'categories' %}"
+                           class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'categories' %}font-semibold text-white{% endif %}">Categories</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'tags' %}"
+                           class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'tags' %}font-semibold text-white{% endif %}">Tags</a>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
 
-            <ul class="bg-[#2c3338] py-2" {% if expand_media %}data-menu-selected="true"{% endif %} data-menu="media">
-                <li>
-                    <a href="{% url 'media' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'media' %}font-semibold text-white{% endif %}">Library</a>
-                </li>
-            </ul>
-        </li>
+        {% has_permission 'media' as show_media %}
+        {% if show_media %}
+            <li class="my-1" data-expand="media">
+                {% should_expand_menu 'media' as expand_media %}
 
-        <li data-expand="pages">
-            {% should_expand_menu 'pages' as expand_pages %}
+                <a href="{% url 'media' %}"
+                   class="px-4 py-2 border-l-4 border-transparent hover:border-blue-500 block text-[14px] {% if expand_media %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+                    <i class="fa-solid fa-image fa-lg w-[28px]"></i>Media
+                </a>
 
-            <a href="{% url 'edit_page_select' %}"
-               class="px-4 py-2 border-l-4 border-transparent block text-[14px] {% if expand_pages %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
-                <i class="fa-solid fa-file fa-lg w-[28px]"></i>Pages
-            </a>
+                <ul class="bg-[#2c3338] py-2" {% if expand_media %}data-menu-selected="true"{% endif %}
+                    data-menu="media">
+                    <li>
+                        <a href="{% url 'media' %}"
+                           class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'media' %}font-semibold text-white{% endif %}">Library</a>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
 
-            <ul class="bg-[#2c3338] py-2" {% if expand_pages %}data-menu-selected="true"{% endif %} data-menu="pages">
-                <li>
-                    <a href="{% url 'edit_page_select' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'edit_page_select' %}font-semibold text-white{% endif %}">All
-                        Pages</a>
-                </li>
-                <li>
-                    <a href="{% url 'new_page' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent  hover:border-blue-500 {% if current_url_name == 'new_page' %}font-semibold text-white{% endif %}">Add
-                        New</a>
-                </li>
-            </ul>
-        </li>
+        {% has_permission 'pages' as show_pages %}
+        {% if show_pages %}
+            <li data-expand="pages">
+                {% should_expand_menu 'pages' as expand_pages %}
 
-        <li class="my-1" data-expand="users">
-            {% should_expand_menu 'users' as expand_users %}
+                <a href="{% url 'edit_page_select' %}"
+                   class="px-4 py-2 border-l-4 border-transparent block text-[14px] {% if expand_pages %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+                    <i class="fa-solid fa-file fa-lg w-[28px]"></i>Pages
+                </a>
 
-            <a href="{% url 'all_users' %}"
-               class="px-4 py-2 border-l-4 border-transparent hover:border-blue-500 block text-[14px] {% if expand_users %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
-                <i class="fa-solid fa-user fa-lg w-[28px]"></i>Users
-            </a>
+                <ul class="bg-[#2c3338] py-2" {% if expand_pages %}data-menu-selected="true"{% endif %}
+                    data-menu="pages">
+                    <li>
+                        <a href="{% url 'edit_page_select' %}"
+                           class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'edit_page_select' %}font-semibold text-white{% endif %}">All
+                            Pages</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'new_page' %}"
+                           class="block px-4 py-1 border-l-4 border-transparent  hover:border-blue-500 {% if current_url_name == 'new_page' %}font-semibold text-white{% endif %}">Add
+                            New</a>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
 
-            <ul class="bg-[#2c3338] py-2" {% if expand_users %}data-menu-selected="true"{% endif %} data-menu="users">
-                <li>
-                    <a href="{% url 'all_users' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'all_users' %}font-semibold text-white{% endif %}">All
-                        Users</a>
-                </li>
-
-                <li>
-                    <a href="{% url 'add_user' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500">Add New</a>
-                </li>
-
-                <li>
+        {% has_permission 'users' as show_users %}
+        {% if show_users %}
+            <li class="my-1" data-expand="users">
+                {% if request.user.role == 'author' %}
                     <a href="{% url 'edit_profile' %}"
-                       class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'edit_profile' %}font-semibold text-white{% endif %}">Profile</a>
-                </li>
-            </ul>
-        </li>
+                       class="px-4 py-2 border-l-4 border-transparent hover:border-blue-500 block text-[14px] {% if expand_users %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+                        <i class="fa-solid fa-user fa-lg w-[28px]"></i>Profile
+                    </a>
+
+                {% else %}
+                    {% should_expand_menu 'users' as expand_users %}
+
+                    <a href="{% url 'all_users' %}"
+                       class="px-4 py-2 border-l-4 border-transparent hover:border-blue-500 block text-[14px] {% if expand_users %}bg-[#2271b1]{% else %}hover:border-blue-500{% endif %}">
+                        <i class="fa-solid fa-user fa-lg w-[28px]"></i>Users
+                    </a>
+
+                    <ul class="bg-[#2c3338] py-2" {% if expand_users %}data-menu-selected="true"{% endif %}
+                        data-menu="users">
+
+                        <li>
+                            <a href="{% url 'all_users' %}"
+                               class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'all_users' %}font-semibold text-white{% endif %}">All
+                                Users</a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'add_user' %}"
+                               class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500">Add New</a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'edit_profile' %}"
+                               class="block px-4 py-1 border-l-4 border-transparent hover:border-blue-500 {% if current_url_name == 'edit_profile' %}font-semibold text-white{% endif %}">Profile</a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </li>
+        {% endif %}
 
         <li>
                 <span class="px-4 py-2 my-1 border-l-4 border-transparent hover:border-blue-500 block text-[14px]">
                     <i class="fa-solid fa-gear fa-lg w-[28px]"></i>Settings
                 </span>
         </li>
-
     </ul>
 </aside>
 

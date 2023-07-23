@@ -109,7 +109,8 @@ USE_TZ = True
 
 # Pick BASE_URL from environment variable
 BASE_URL = os.environ.get('BASE_URL', '')
-print(BASE_URL)
+
+LOGIN_URL = f'/{BASE_URL}accounts/login'
 
 STATIC_URL = f'{BASE_URL}static/'
 
