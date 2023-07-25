@@ -1,7 +1,8 @@
-from typing import Type
+from typing import Type, Union
 
 from django import template
 from django.http import HttpRequest
+from django.db.models import Model, QuerySet
 
 from ..permissions import (
     ViewPermissionMixin,
@@ -72,3 +73,34 @@ def current_url_name(context) -> bool:
     """
 
     return context.request.resolver_match.url_name
+
+
+@register.inclusion_tag(filename='components/order.html', takes_context=True)
+def order_link(context, field_name: str):
+    request: HttpRequest = context.request
+    order_by: Union[str, None] = request.GET.get('order_by')
+    order: Union[str, None] = request.GET.get('order')
+    if not order:
+        order = 'ASC'
+
+    field_matched: bool = (order_by == field_name)
+
+    is_asc: bool = True
+    if order.upper() == 'ASC':
+        is_asc = True
+    elif order.upper() == 'DESC':
+        is_asc = False
+
+    return {
+        'field_name': field_name,
+        'field_matched': field_matched,
+        'is_asc': is_asc
+    }
+
+
+@register.simple_tag
+def related_count(instance: Model, related_field: str) -> int:
+    if not hasattr(instance, related_field):
+        raise Exception(f'No such field {related_field} in {instance.__class__.__name__}')
+
+    return getattr(instance, related_field).all().count()

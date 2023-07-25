@@ -1,5 +1,7 @@
 {% extends 'layouts/default.html' %}
 
+{% load utils %}
+
 {% block title %}
     <title>{{ title }} - DJ CMS</title>
 {% endblock %}
@@ -29,12 +31,12 @@
             <table class="w-full">
                 <thead class="border-b border-[#dfdfdf]">
                 <tr class="text-sm">
-                    <th class="font-normal text-blue-600 py-2 text-start px-4">Username</th>
-                    <th class="font-normal w-1/6 text-start px-4 hidden sm:table-cell">Name</th>
-                    <th class="font-normal text-blue-600 w-1/6 text-start px-4 hidden md:table-cell">Email</th>
-                    <th class="font-normal w-1/6 text-start px-4 hidden md:table-cell">Role</th>
+                    <th class="font-normal text-blue-600 py-2 text-start px-4 group">Username {% order_link 'username' %}</th>
+                    <th class="font-normal w-1/6 text-start px-4 hidden sm:table-cell group">Name {% order_link 'first_name,last_name' %}</th>
+                    <th class="font-normal text-blue-600 w-1/6 text-start px-4 hidden md:table-cell group">Email {% order_link 'email' %}</th>
+                    <th class="font-normal w-1/6 text-start px-4 hidden md:table-cell group">Role {% order_link 'role' %}</th>
                     <th class="font-normal w-1/6 text-start px-4 hidden lg:table-cell">Posts</th>
-                    <th class="font-normal py-2 w-1/6 text-start px-4 hidden lg:table-cell">Joined</th>
+                    <th class="font-normal py-2 w-1/6 text-start px-4 hidden lg:table-cell group">Joined {% order_link 'date_joined' %}</th>
                 </tr>
                 </thead>
                 <tbody>

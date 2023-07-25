@@ -78,7 +78,7 @@ class ContentQuery:
             queryset = queryset.filter(author=self.user)
 
         return {
-            'all_posts_count': queryset.count(),
+            'all_posts_count': queryset.filter(is_trash=False).count(),
             'published_posts_count': queryset.filter(is_draft=False, is_trash=False).count(),
             'draft_posts_count': queryset.filter(is_draft=True, is_trash=False).count(),
             'trash_posts_count': queryset.filter(is_trash=True).count()

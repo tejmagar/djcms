@@ -1,5 +1,7 @@
 {% extends 'layouts/default.html' %}
 
+{% load utils %}
+
 {% block title %}
     <title>Categories - DJ CMS</title>
 {% endblock %}
@@ -28,11 +30,15 @@
                     <table class="w-full">
                         <thead class="border-b border-[#dfdfdf]">
                         <tr class="text-sm border-b border-[#dedede]">
-                            <th class="font-normal text-blue-600 py-2 w-1/4 text-start px-4">Name</th>
-                            <th class="font-normal text-blue-600 w-1/4 text-start px-4 hidden sm:table-cell">Description
+                            <th class="font-normal text-blue-600 py-2 w-1/4 text-start px-4 group">
+                                Name {% order_link 'title' %}</th>
+                            <th class="font-normal text-blue-600 w-1/4 text-start px-4 hidden sm:table-cell">
+                                Description {% order_link 'description' %}
                             </th>
-                            <th class="font-normal text-blue-600 w-1/4 text-start px-4 hidden md:table-cell">Slug</th>
-                            <th class="font-normal text-blue-600 py-2 w-1/6 text-end px-4 hidden lg:table-cell">Count
+                            <th class="font-normal text-blue-600 w-1/4 text-start px-4 hidden md:table-cell">
+                                Slug {% order_link 'slug' %}</th>
+                            <th class="font-normal text-blue-600 py-2 w-1/6 text-end px-4 hidden lg:table-cell">
+                                Count
                             </th>
                         </tr>
                         </thead>
@@ -71,8 +77,9 @@
                                 </td>
                                 <td class="font-normal w-1/4 align-top text-start text-[13px] text-gray-600 px-4 py-2 hidden md:table-cell">{{ category.slug }}</td>
                                 <td class="font-normal text-blue-600 w-1/6 align-top text-end px-4 py-2 hidden lg:table-cell">
-                                    0
+                                    {% related_count category count_related_field %}
                                 </td>
+
                             </tr>
                         {% endfor %}
                         </tbody>

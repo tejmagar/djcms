@@ -1,4 +1,4 @@
-from typing import Type, Any, Union
+from typing import Type, Any, Union, Optional
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, asdict
 
@@ -277,10 +277,11 @@ class AbstractGroupView(AuthorMixin, View):
     This is the abstract class for handling group items like Categories and Tags.
     """
 
-    template_name: str = None
-    form_class: Type[ModelForm] = None
-    form_success_redirect_url: str = None
-    model_class: Type[Model] = None
+    template_name: Optional[str] = None
+    form_class: Optional[Type[ModelForm]] = None
+    form_success_redirect_url: Optional[str] = None
+    model_class: Optional[Type[Model]] = None
+    count_related_field: Optional[str] = None
 
     def validate(self):
         if not self.template_name:
@@ -302,9 +303,11 @@ class AbstractGroupView(AuthorMixin, View):
         self.validate()
 
         form: ModelForm = self.form_class()
+
         return render(request, self.template_name, {
             'form': form,
-            'items': self.get_items()
+            'items': self.get_items(),
+            'count_related_field': self.count_related_field
         })
 
     def post(self, request):
@@ -317,7 +320,8 @@ class AbstractGroupView(AuthorMixin, View):
 
         return render(request, self.template_name, {
             'form': form,
-            'items': self.get_items()
+            'items': self.get_items(),
+            'count_related_field': self.count_related_field
         })
 
 
@@ -326,6 +330,7 @@ class CategoriesView(AbstractGroupView):
     form_class = CategoryForm
     form_success_redirect_url = reverse_lazy('categories')
     model_class = Category
+    count_related_field = 'post_set'
 
 
 class TagsView(AbstractGroupView):
@@ -333,6 +338,7 @@ class TagsView(AbstractGroupView):
     form_class = TagForm
     form_success_redirect_url = reverse_lazy('tags')
     model_class = Tag
+    count_related_field = 'post_set'
 
 
 class AbstractEditGroupView(AuthorMixin, View):

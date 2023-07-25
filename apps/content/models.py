@@ -24,6 +24,7 @@ class Post(SeoMeta, StatusMixin):
     content = models.TextField(null=True, blank=True)
     excerpt = models.TextField(null=True, blank=True)
     categories = models.ManyToManyField(to='Category', blank=True)
+    tags = models.ManyToManyField(to='Tag', blank=True)
     slug = models.SlugField(blank=True, unique=True)
     updated_at = models.DateTimeField(auto_now=True)
 

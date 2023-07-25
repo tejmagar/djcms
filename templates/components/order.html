@@ -1,0 +1,3 @@
+<a href="?order_by={{ field_name }}&order={% if is_asc %}DESC{% else %}ASC{% endif %}">
+    <i class="fa-solid {% if field_matched and not is_asc %} fa-caret-up {% else %} fa-caret-down {% endif %} mx-1 fa-sm {% if not field_matched %}invisible group-hover:visible{% endif %}"></i>
+</a>
